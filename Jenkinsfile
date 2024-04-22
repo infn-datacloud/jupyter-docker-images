@@ -15,7 +15,7 @@ pipeline {
             steps {
                 script {
                     // Build the base Docker image
-                    def baseLabImage = docker.build("${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}", "-f docker/single-node-jupyterhub/lab/Dockerfile .")
+                    def baseLabImage = docker.build("${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}", "-f docker/single-node-jupyterhub/lab/Dockerfile docker/single-node-jupyterhub/lab")
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
                     def derivedLabImage = docker.build(
                         "${BASE_LAB_PERSISTENCE_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}",
                         "--build-arg BASE_IMAGE=harbor.cloud.infn.it/${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}",
-                        "-f ./docker/single-node-jupyterhub/lab/base-persistence/Dockerfile ."
+                        "-f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
                     )
                 }
             }
