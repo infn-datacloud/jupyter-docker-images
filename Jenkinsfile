@@ -6,7 +6,7 @@ pipeline {
     environment {
         HARBOR_CREDENTIALS = 'harbor-paas-credentials'
         BASE_LAB_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
-        BASE_LAB_PERSISTENCE_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
+        BASE_LAB_PERSISTENCE_IMAGE_NAME = 'datacloud-templates/snj-base-lab-persistence'
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
     
@@ -26,7 +26,7 @@ pipeline {
                     // Build the derived Docker image using the base image
                     def derivedLabImage = docker.build(
                         "${BASE_LAB_PERSISTENCE_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}",
-                        "--build-arg BASE_IMAGE=harbor.cloud.infn.it/${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}",
+                        "--build-arg BASE_IMAGE=${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}",
                         "-f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
                     )
                 }
