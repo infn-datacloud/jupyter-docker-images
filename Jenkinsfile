@@ -6,16 +6,27 @@ pipeline {
     environment {
         HARBOR_CREDENTIALS = 'harbor-paas-credentials'
         BASE_LAB_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
+        JHUB_IMAGE_NAME = 'datacloud-templates/snj-base-jhub'
         BASE_LAB_PERSISTENCE_IMAGE_NAME = 'datacloud-templates/snj-base-lab-persistence'
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
     
     stages {
+        stage('Build Hub Image') {
+            steps {
+                script {
+                    // Build the base Docker image
+                    docker.build("${JHUB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}", "--no-cache -f docker/single-node-jupyterhub/jupyterhub/Dockerfile docker/single-node-jupyterhub/jupyterhub")
+                }
+            }
+        }
+        
+        
         stage('Build Base Lab Image') {
             steps {
                 script {
                     // Build the base Docker image
-                    def baseLabImage = docker.build("${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}", "-f docker/single-node-jupyterhub/lab/Dockerfile docker/single-node-jupyterhub/lab")
+                    def baseLabImage = docker.build("${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}", "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile docker/single-node-jupyterhub/lab")
                 }
             }
         }
@@ -26,8 +37,19 @@ pipeline {
                     // Build the derived Docker image using the base image
                     def derivedLabImage = docker.build(
                         "${BASE_LAB_PERSISTENCE_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}",
-                        "--build-arg BASE_IMAGE=${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME} -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
+                        "--build-arg BASE_IMAGE=${BASE_LAB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME} --no-cache -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
                     )
+                }
+            }
+        }
+
+        stage('Push Hub Image to Harbor') {
+            steps {
+                script {
+                    def jhubImage = docker.image("${JHUB_IMAGE_NAME}:${env.SANITIZED_BRANCH_NAME}")
+                    docker.withRegistry('https://harbor.cloud.infn.it', HARBOR_CREDENTIALS) {
+                        jhubImage.push()
+                    }
                 }
             }
         }
