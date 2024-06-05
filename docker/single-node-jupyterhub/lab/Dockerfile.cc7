@@ -1,6 +1,6 @@
-# Image name: dodasts/snj-base-lab-cc7
+# Image name: snj-base-lab-cc7
 ARG BASE_IMAGE="cern/cc7-base"
-# hadolint ignore=DL3006
+
 FROM ${BASE_IMAGE}
 
 COPY cc7/packages /tmp/
@@ -25,13 +25,13 @@ RUN mkdir -p /usr/local/share/dodasts /usr/local/share/dodasts/script /usr/local
     && python3 -m pip install  --no-cache-dir -U pip==21.3.1 setuptools==59.6.0 wheel==0.37.1
 
 # Install sts-wire
-RUN curl -L https://github.com/DODAS-TS/sts-wire/releases/download/v2.1.2/sts-wire_linux -o /usr/local/share/dodasts/bin/sts-wire && \
+RUN curl -L https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 -o /usr/local/share/dodasts/bin/sts-wire && \
     chmod +x /usr/local/share/dodasts/bin/sts-wire && \
     ln -s /usr/local/share/dodasts/bin/sts-wire /usr/local/bin/sts-wire
 
 # Install oidc-agent
 RUN curl -L https://repo.data.kit.edu/data-kit-edu-centos7.repo -o /etc/yum.repos.d/data-kit-edu-centos7.repo && \
-    yum install -y oidc-agent && yum clean all
+    yum install -y oidc-agent liboidc-agent4=4.5.1-1 oidc-agent-cli=4.5.1-1 oidc-agent-desktop=4.5.1-1 oidc-agent=4.5.1-1 && yum clean all
 
 # Install jupyterlab
 RUN python3 -m pip install --no-cache-dir \
@@ -64,7 +64,7 @@ WORKDIR /usr/local/share/dodasts
 RUN git clone https://github.com/DODAS-TS/jupyterlab-collaborative-util-extension.git
 WORKDIR /usr/local/share/dodasts/jupyterlab-collaborative-util-extension
 RUN sed -i 's/\(    "target":\)\(.*\)/\1 "'"es2018"'",/g' tsconfig.json && \
-    sed -i '/"compilerOptions": {/a \    "lib": ["es2018", "dom"],' tsconfig.json && \
+    sed -i '/"compilerOptions": {/a \    "lib": ["es2018", "dom"],\n    "skipLibCheck": true,' tsconfig.json && \
     jupyter labextension install
 WORKDIR /usr/local/share/dodasts
 

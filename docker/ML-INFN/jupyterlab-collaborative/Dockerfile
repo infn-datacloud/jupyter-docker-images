@@ -1,5 +1,5 @@
-# Image name: dodasts/ml-infn-jlabc
-FROM dodasts/snj-base-jlabc-gpu:v1.1.1-snj
+# Image name: ml-infn-jlabc
+FROM harbor.cloud.infn.it/datacloud-templates/snj-base-jlabc-gpu:1.2.0
 
 # Disable diff checkpoit
 RUN jupyter labextension disable nbdime-jupyterlab

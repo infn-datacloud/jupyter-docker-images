@@ -17,7 +17,7 @@ if [ ${S3_BUCKETS%% *} ] && [ $S3_ENDPOINT ]; then
 	mkdir -p s3
 	for S3_BUCKET in ${S3_BUCKETS};
 	do
-	    .init/sts-wire $IAM_SERVER ${S3_BUCKET} ${S3_ENDPOINT} /${S3_BUCKET} s3/${S3_BUCKET} > .mount_log_${S3_BUCKET}.txt &
+	    .init/sts-wire $IAM_SERVER ${S3_BUCKET} ${S3_ENDPOINT} IAMaccess object --localCache full --tryRemount --noDummyFileCheck /${S3_BUCKET} s3/${S3_BUCKET} > .mount_log_${S3_BUCKET}.txt &
 	    sleep 10
 	done
 else
@@ -27,12 +27,9 @@ else
 	kill `ps faux | grep "sts-wire scratch" | awk '{ print $2 }'`
 	kill `ps faux | grep ".scratch" | awk '{ print $2 }'`
 
-	mkdir -p /s3/
-	mkdir -p /s3/${USERNAME}
-	mkdir -p /s3/scratch
+	mkdir -p s3/${USERNAME}
+	mkdir -p s3/scratch
 
-	cd /.init/
-
-	.init/sts-wire https://iam.cloud.infn.it/  ${USERNAME} https://minio.cloud.infn.it/ /${USERNAME} s3/${USERNAME} > .mount_log_${USERNAME}.txt &
-	.init/sts-wire https://iam.cloud.infn.it/ scratch https://minio.cloud.infn.it/  /scratch s3/scratch > .mount_log_scratch.txt &
+	.init/sts-wire https://iam.cloud.infn.it/ "${USERNAME}" https://rgw.cloud.infn.it/ IAMaccess object "/${USERNAME}" "s3/${USERNAME}" --localCache full --tryRemount --noDummyFileCheck > ".mount_log_${USERNAME}.txt" &
+	.init/sts-wire https://iam.cloud.infn.it/ scratch https://rgw.cloud.infn.it/ IAMaccess object /scratch s3/scratch --localCache full --tryRemount --noDummyFileCheck > .mount_log_scratch.txt &
 fi

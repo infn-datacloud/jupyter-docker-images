@@ -1,5 +1,5 @@
-# Image name: dodasts/cygno-lab
-FROM dodasts/snj-base-lab-cc7:v1.1.1-snj
+# Image name: cygno-lab -> based on snj-base-lab-cc7
+FROM harbor.cloud.infn.it/datacloud-templates/snj-base-lab-cc7:1.2.0
 
 ENV OIDC_AGENT=/usr/bin/oidc-agent
 
@@ -24,6 +24,7 @@ COPY lab/htcondor_ca.crt /etc/pki/ca-trust/source/anchors/
 COPY lab/condor_config.local /etc/condor/
 
 # clean metadata: https://srvfail.com/yum-doesnt-work-in-clean-centos-7-install-exiting-on-user-cancel/
+RUN yum-config-manager --save --setopt=htcondor-development.skip_if_unavailable=true
 RUN yum -y clean metadata \
     && yum --exclude=\*oidc-agent\* -y update \
     && yum --exclude=\*oidc-agent\* -y upgrade \
@@ -37,7 +38,7 @@ RUN yum -y clean metadata \
     python2-condor \
     python3-condor \
     && yum -y clean all \
-    && rm -f /tmp/packages
+    && rm -f /tmp/packages 
 
 RUN jupyter labextension uninstall @jlab_collaborative_ext/context-menu
 
@@ -77,12 +78,7 @@ RUN ./install_CYGNO-MC.sh
 WORKDIR /
 
 # Install boto
-RUN pip3 install --no-cache-dir -U git+https://github.com/DODAS-TS/boto3sts
-
-# Install ca
-RUN wget "https://crt.sh/?d=2475254782" --progress=bar -O /etc/pki/ca-trust/source/anchors/ca.crt \
-    && update-ca-trust \
-    && update-ca-trust force-enable
+RUN pip3 install --no-cache-dir -U git+https://github.com/infn-datacloud/boto3sts
 
 # Install 
 RUN pip3 install --no-cache-dir -U \
@@ -95,11 +91,19 @@ RUN pip3 install --no-cache-dir -U \
     metakernel==0.28.2 \
     tensorflow==2.6.2 \
     opencv-python==4.6.0.66 \
-    root_numpy \
-    pydot \
-    graphviz \
-    uproot \
-    && pip3 install --no-cache-dir -U git+https://github.com/CYGNUS-RD/cygno.git \
+    root_numpy==4.8.0 \
+    pydot==1.4.2\
+    graphviz==0.19.1 \
+    uproot==4.3.7 \  
+    mysql-connector==2.2.9 \
+    tables==3.7.0 \
+    lecroyparser==1.4.2 \
+    Cython==3.0.2 \
+    ephem==4.1.5 \
+    iminuit==2.16.0 \
+    gspread==5.9.0 \
+    oauth2client==4.1.3 \
+    && pip3 install --no-cache-dir -U git+https://github.com/CYGNUS-RD/cygno.git@v1.0.17 \
     && pip3 install 'https://github.com/CYGNUS-RD/middleware/blob/master/midas/midaslib.tar.gz?raw=true'
 
 # Force default python in jupyter kernel to Python3
@@ -110,20 +114,20 @@ RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
 
 # last requirments....
 RUN yum install emacs -y 
-RUN yum install screen -y
-RUN wget https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz; \
-    tar xvf Python-3.9.10.tgz; \
-    cd Python-3.9*/; \
-    ./configure --enable-optimizations; \
-    make altinstall; \
-    cd .. ; \
-    rm -rf Python-3.9*
+RUN yum install vim -y
+#RUN yum install screen -y
+#RUN wget https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz; \
+#    tar xvf Python-3.9.10.tgz; \
+#    cd Python-3.9*/; \
+#    ./configure --enable-optimizations; \
+#    make altinstall; \
+#    cd .. ; \
+#    rm -rf Python-3.9*
 
 # Link folders
 RUN mkdir -p ${JUPYTER_ROOT} \
     && ln -s /s3 ${JUPYTER_ROOT}/cloud-storage \
     && ln -s /shared ${JUPYTER_ROOT}/shared \
     && ln -s /private ${JUPYTER_ROOT}/private
-
 
 WORKDIR /jupyter-workspace

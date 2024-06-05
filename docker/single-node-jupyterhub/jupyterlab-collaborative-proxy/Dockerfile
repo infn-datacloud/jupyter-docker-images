@@ -1,11 +1,11 @@
-# Image name: dodasts/snj-base-jlabc-proxy
+# Image name: snj-base-jlabc-proxy
 FROM ubuntu:20.04
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    python3-dev=3.8.2-0ubuntu2 python3-pip=20.0.2-5ubuntu1.8 \
-    libcurl4-openssl-dev=7.68.0-1ubuntu2.16 libssl-dev=1.1.1f-1ubuntu2.17 \
+    python3-dev=3.8.2-0ubuntu2 python3-pip=20.0.2-5ubuntu1.10 \
+    libcurl4-openssl-dev=7.68.0-1ubuntu2.22 libssl-dev=1.1.1f-1ubuntu2.22 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

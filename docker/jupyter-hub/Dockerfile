@@ -1,9 +1,9 @@
+# Image jhub-spark
 FROM ghcr.io/dodas-ts/dodas-iam-client-rec:v0.0.6 as REGISTRATION
-
 FROM jupyter/base-notebook:lab-4.0.2
 
-MAINTAINER Diego Ciangottini <diego.ciangottini@cern.ch> \
-           Marco Verlato <verlato@infn.it>
+LABEL Diego Ciangottini <diego.ciangottini@cern.ch> \
+      Marco Verlato <verlato@infn.it>
 
 # callback = os.environ["OAUTH_CALLBACK_URL"]
 # iam_server = os.environ["OAUTH_ENDPOINT"]
