@@ -5,7 +5,6 @@ source /usr/local/share/dodasts/script/oidc_agent_init.sh
 BASE_CACHE_DIR="/usr/local/share/dodasts/sts-wire/cache"
 
 mkdir -p "${BASE_CACHE_DIR}"
-mkdir -p /usr/local/share/dodasts/sts-wire/cache
 mkdir -p /var/log/sts-wire/
 mkdir -p /s3/"${USERNAME}"
 mkdir -p /s3/scratch

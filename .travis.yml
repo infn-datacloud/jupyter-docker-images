@@ -1,9 +1,0 @@
-services:
-    - docker
-
-before_install:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-script:
-    - make build-all
-    - VERSION=`cat version.txt`  make push-all
