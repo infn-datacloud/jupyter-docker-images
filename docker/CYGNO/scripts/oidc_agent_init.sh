@@ -24,6 +24,6 @@ oidc-gen dodas --issuer "$IAM_SERVER" \
 #    --pw-cmd "echo \"DUMMY PWD\""
 
 while true; do
-    oidc-token dodas --time 1200 --aud="object" >/tmp/token
+    oidc-token dodas --time 1200 > /tmp/token
     sleep 600
 done &
