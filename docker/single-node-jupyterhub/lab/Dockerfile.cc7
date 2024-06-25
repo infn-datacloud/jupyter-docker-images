@@ -8,12 +8,11 @@ COPY cc7/packages /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # clean metadata: https://srvfail.com/yum-doesnt-work-in-clean-centos-7-install-exiting-on-user-cancel/
-RUN yum -y clean metadata \
-    &&yum -y update \
+RUN yum clean metadata \
+    && yum -y update \
     && yum -y upgrade \
     && yum -y install epel-release \
     && xargs yum -y install < /tmp/packages \
-    && yum -y clean all \
     && localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -f /tmp/packages \
     && yum clean all
@@ -30,8 +29,7 @@ RUN curl -L https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2
     ln -s /usr/local/share/dodasts/bin/sts-wire /usr/local/bin/sts-wire
 
 # Install oidc-agent
-RUN curl -L https://repo.data.kit.edu/data-kit-edu-centos7.repo -o /etc/yum.repos.d/data-kit-edu-centos7.repo && \
-    yum install -y oidc-agent liboidc-agent4=4.5.1-1 oidc-agent-cli=4.5.1-1 oidc-agent-desktop=4.5.1-1 oidc-agent=4.5.1-1 && yum clean all
+RUN curl -L https://repo.data.kit.edu/data-kit-edu-centos7.repo -o /etc/yum.repos.d/data-kit-edu-centos7.repo && yum install -y oidc-agent-cli-4.5.1-1.el7.x86_64 && yum clean all
 
 # Install jupyterlab
 RUN python3 -m pip install --no-cache-dir \

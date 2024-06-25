@@ -25,7 +25,7 @@ COPY lab/condor_config.local /etc/condor/
 
 # clean metadata: https://srvfail.com/yum-doesnt-work-in-clean-centos-7-install-exiting-on-user-cancel/
 RUN yum-config-manager --save --setopt=htcondor-development.skip_if_unavailable=true
-RUN yum -y clean metadata \
+RUN yum clean metadata \
     && yum --exclude=\*oidc-agent\* -y update \
     && yum --exclude=\*oidc-agent\* -y upgrade \
     && xargs yum -y install < /tmp/packages \
@@ -37,8 +37,8 @@ RUN yum -y clean metadata \
     condor-procd \
     python2-condor \
     python3-condor \
-    && yum -y clean all \
-    && rm -f /tmp/packages 
+    && yum clean all \
+    && rm -f /tmp/packages
 
 RUN jupyter labextension uninstall @jlab_collaborative_ext/context-menu
 
@@ -108,13 +108,11 @@ RUN pip3 install --no-cache-dir -U \
 
 # Force default python in jupyter kernel to Python3
 COPY lab/kernel.json /usr/local/share/jupyter/kernels/python3/
-
 # cmake3 alias
 RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
 
 # last requirments....
-RUN yum install emacs -y 
-RUN yum install vim -y
+RUN yum -y install emacs vim
 #RUN yum install screen -y
 #RUN wget https://www.python.org/ftp/python/3.9.10/Python-3.9.10.tgz; \
 #    tar xvf Python-3.9.10.tgz; \
