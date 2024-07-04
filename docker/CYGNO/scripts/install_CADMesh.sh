@@ -4,9 +4,9 @@ mkdir -p /usr/local/share/CADMesh
 
 pushd /usr/local/share/CADMesh || exit 1
 
-git clone --branch v1.1 https://github.com/christopherpoole/CADMesh.git . &&
-    git submodule update --init --recursive &&
-    mkdir -p /usr/local/share/CADMesh/build
+git clone --recurse-submodules --branch v1.1 https://github.com/christopherpoole/CADMesh.git .
+
+mkdir -p /usr/local/share/CADMesh/build
 
 pushd /usr/local/share/CADMesh/build || exit 2
 

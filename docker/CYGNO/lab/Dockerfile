@@ -48,8 +48,6 @@ RUN chmod +x /usr/local/share/dodasts/script/post_script.sh
 COPY scripts/oidc_agent_init.sh /usr/local/share/dodasts/script/
 RUN chmod +x /usr/local/share/dodasts/script/oidc_agent_init.sh
 
-WORKDIR /usr/local/share/dodasts/script/
-
 # garfield env variables
 ENV GARFIELD_HOME=/usr/local/share/garfield
 ENV HEED_DATABASE=${GARFIELD_HOME}/Heed/heed++/database
@@ -57,23 +55,23 @@ ENV HEED_DATABASE=${GARFIELD_HOME}/Heed/heed++/database
 # Install Geant4
 COPY scripts/install_geant4.sh /usr/local/share/dodasts/script/
 RUN chmod +x /usr/local/share/dodasts/script/install_geant4.sh
-RUN ./install_geant4.sh
+RUN /usr/local/share/dodasts/script/install_geant4.sh
 # Install garfield
 COPY scripts/install_garfield.sh /usr/local/share/dodasts/script/
 RUN chmod +x /usr/local/share/dodasts/script/install_garfield.sh
-RUN ./install_garfield.sh
+RUN /usr/local/share/dodasts/script/install_garfield.sh
 # Install CADMesh
 COPY scripts/install_CADMesh.sh /usr/local/share/dodasts/script/
 RUN chmod +x /usr/local/share/dodasts/script/install_CADMesh.sh
-RUN ./install_CADMesh.sh
+RUN /usr/local/share/dodasts/script/install_CADMesh.sh
 # Install RooUnfold
 COPY scripts/install_RooUnfold.sh /usr/local/share/dodasts/script/
 RUN chmod +x /usr/local/share/dodasts/script/install_RooUnfold.sh
-RUN ./install_RooUnfold.sh
+RUN /usr/local/share/dodasts/script/install_RooUnfold.sh
 # Install CYGNO-MC
 COPY scripts/install_CYGNO-MC.sh /usr/local/share/dodasts/script/
 RUN chmod +x /usr/local/share/dodasts/script/install_CYGNO-MC.sh
-RUN ./install_CYGNO-MC.sh
+RUN /usr/local/share/dodasts/script/install_CYGNO-MC.sh
 
 WORKDIR /
 
@@ -90,7 +88,7 @@ RUN pip3 install --no-cache-dir -U \
     jedi-language-server==0.21.0 \
     metakernel==0.28.2 \
     tensorflow==2.6.2 \
-    opencv-python==4.6.0.66 \
+    opencv-python==4.7.0.72 \
     root_numpy==4.8.0 \
     pydot==1.4.2\
     graphviz==0.19.1 \
