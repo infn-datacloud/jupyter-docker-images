@@ -1,6 +1,7 @@
 # Image name: docker.io/jgvino/jupyterhub-jlab:v2
+
 #ARG BASE_IMAGE="quay.io/jupyter/minimal-notebook:2024-09-23"
-ARG BASE_IMAGE="quay.io/jupyter/scipy-notebook:2024-07-02" 
+ARG BASE_IMAGE="quay.io/jupyter/scipy-notebook:2024-10-02" 
 FROM ${BASE_IMAGE}
 
 USER root
