@@ -10,8 +10,7 @@ RUN python3 -m pip install --no-cache-dir -U \
             # dockerspawner==13.0.0
             dockerspawner \ 
             jupyterhub-idle-culler \
-            # oauthenticator==14.2.0 
-            oauthenticator \
+            oauthenticator==15.1.0 \
             pip \
             pyjwt \
             setuptools \
