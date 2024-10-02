@@ -63,17 +63,11 @@ RUN python3 -m pip install --no-cache-dir \
         tornado 
 
 # Install vscode (mainteiner Lucio Anderlini)
-#RUN curl -fsSL https://code-server.dev/install.sh | sh
-#RUN python3 -m pip install \ 
-#git+https://github.com/landerlini/jupyter_codeserver_proxy.git \
-#        jupyter-resource-usage \
-#        jupyter-server-proxy 
-
-# Remove jovyan home directory
-RUN cp /home/jovyan/.bashrc /root/.bashrc && \
-    source /root/.bashrc && \
-    cp /home/jovyan/.profile /root/.profile && \
-    rm -rf /home/jovyan
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+RUN python3 -m pip install \ 
+        git+https://github.com/infn-datacloud/jupyter_codeserver_proxy.git \
+        jupyter-resource-usage \
+        jupyter-server-proxy 
 
 USER root
 WORKDIR /jupyter-workspace
