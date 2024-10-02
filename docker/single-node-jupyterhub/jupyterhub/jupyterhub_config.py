@@ -24,10 +24,7 @@ iam_server = os.environ["OAUTH_ENDPOINT"]
 server_host = socket.gethostbyname(socket.getfqdn())
 os.environ["IAM_INSTANCE"] = iam_server
 
-c.Spawner.default_url = '/lab'
-c.Spawner.args = ["--allow-root"]
-
-myenv = os.environ.copy()
+#c.Spawner.default_url = '/lab'
 
 class EnvAuthenticator(GenericOAuthenticator):
     @gen.coroutine
@@ -103,11 +100,8 @@ class EnvAuthenticator(GenericOAuthenticator):
             grant_type="authorization_code",
         )
         params.update(self.extra_params)
-
         headers = self._get_headers()
-
         token_resp_json = await self._get_token(headers, params)
-
         user_data_resp_json = await self._get_user_data(token_resp_json)
 
         if callable(self.username_key):
@@ -123,7 +117,6 @@ class EnvAuthenticator(GenericOAuthenticator):
                 return
 
         auth_state = self._create_auth_state(token_resp_json, user_data_resp_json)
-
        
         # Spiga - Patch to implement WLCG - IAM prifiles compatibility
         if "wlcg.groups" in auth_state["scope"]:
@@ -186,7 +179,6 @@ if "JUPYTERHUB_CRYPT_KEY" not in os.environ:
     c.CryptKeeper.keys = [os.urandom(32)]
 
 c.JupyterHub.log_level = 30
-
 c.JupyterHub.cookie_secret_file = "./cookies/jupyterhub_cookie_secret"
 
 c.ConfigurableHTTPProxy.debug = True
@@ -194,7 +186,6 @@ c.JupyterHub.cleanup_servers = False
 c.ConfigurableHTTPProxy.should_start = False
 c.ConfigurableHTTPProxy.auth_token = os.environ.get("JUPYTER_PROXY_TOKEN", "test_token")
 c.ConfigurableHTTPProxy.api_url = "http://http_proxy:8001"
-
 
 _option_template = """
 <label for="stack">Select your desired image:</label>
@@ -249,7 +240,6 @@ class CustomSpawner(dockerspawner.DockerSpawner):
             rams="\n".join(ram_options),
             gpu=gpu_option,
         )
-
         return options
 
     def options_from_form(self, formdata):
@@ -295,6 +285,9 @@ class CustomSpawner(dockerspawner.DockerSpawner):
 
         # ensure internal port is exposed
         create_kwargs["ports"] = {"%i/tcp" % self.port: None}
+        
+        # Starting from image minimal-notebook, jupyter is started with the user jovyan
+        # Following 3 lines force to start jupyter as root
         create_kwargs['environment']['NB_USER'] = 'root'
         create_kwargs['environment']['NB_UID'] = 0
         create_kwargs['environment']['NB_GID'] = 0
