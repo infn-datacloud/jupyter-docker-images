@@ -368,11 +368,11 @@ notebook_mount_dir_prefix: str = os.environ.get("DOCKER_NOTEBOOK_MOUNT_DIR", "")
 if notebook_mount_dir_prefix != "":
     notebook_mount_dir = notebook_mount_dir_prefix + "/jupyter-mounts"
 
-
 collaborative_service: bool = os.getenv("JUPYTER_COLLAB_SERVICE", "False").lower() in [
     "true",
     "t",
     "yes",
+    "y"
 ]
 
 volumes = {
@@ -434,7 +434,6 @@ c.DockerSpawner.debug = True
 
 c.JupyterHub.hub_bind_url = "http://:8088"
 c.JupyterHub.hub_connect_ip = "jupyterhub"
-
 c.JupyterHub.admin_access = True
 
 # c.Authenticator.allowed_users = {'test'}
