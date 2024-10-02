@@ -1,13 +1,9 @@
 # Configuration file for JupyterHub
-import json
 import os
-import pathlib
 import pprint
 import socket
-import subprocess
 import sys
 import warnings
-import re
 import jwt
 
 import dockerspawner
@@ -66,8 +62,6 @@ class EnvAuthenticator(GenericOAuthenticator):
 
         self.log.info(auth_state["oauth_user"])
         
-       
-
         if auth_state["oauth_user"]["sub"] == os.environ["OAUTH_SUB"]:
             amIAllowed = True
 
@@ -327,14 +321,13 @@ class CustomSpawner(dockerspawner.DockerSpawner):
         obj = yield self.docker("create_container", **create_kwargs)
         return obj
 
-
 c.JupyterHub.spawner_class = CustomSpawner
 
 default_spawner = os.getenv("DEFAULT_SPAWNER", "LAB")
 # Default spawn to jupyter noteook
 spawn_cmd = os.environ.get(
     "DOCKER_SPAWN_CMD",
-    "tini -s -- jupyterhub-singleuser --port=8889 --ip=0.0.0.0 --allow-root --debug --no-browser",
+    "tini -s -- jupyterhub-singleuser --port=8889 --ip=0.0.0.0 --allow-root --debug --no-browser --ResourceUseDisplay.track_cpu_percent=True",
 )
 c.DockerSpawner.port = 8889
 
@@ -399,7 +392,9 @@ volumes = {
     },
     # Mount point for private stuff
     notebook_mount_dir
-    + "/users/{username}/": {"bind": notebook_dir + "/private", "mode": "rw"},
+    + "/users/{username}/": {
+        "bind": notebook_dir + "/private", 
+        "mode": "rw"},
 }
 
 volumes_collab = {
@@ -429,7 +424,7 @@ use_cvmfs: bool = os.getenv("JUPYTER_WITH_CVMFS", "False").lower() in [
 if use_cvmfs:
     c.DockerSpawner.volumes["/cvmfs/"] = {
         "bind": f"{notebook_dir}/cvmfs",
-        "mode": "rw",
+        "mode": "ro",
     }
 
 
