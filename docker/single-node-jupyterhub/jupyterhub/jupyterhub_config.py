@@ -294,6 +294,9 @@ class CustomSpawner(dockerspawner.DockerSpawner):
 
         # ensure internal port is exposed
         create_kwargs["ports"] = {"%i/tcp" % self.port: None}
+        create_kwargs['environment']['NB_USER'] = 'root'
+        create_kwargs['environment']['NB_UID'] = 0
+        create_kwargs['environment']['NB_GID'] = 0
 
         create_kwargs.update(self.extra_create_kwargs)
 
