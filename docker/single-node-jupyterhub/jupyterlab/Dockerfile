@@ -68,5 +68,6 @@ RUN python3 -m pip install \
         jupyter-resource-usage \
         jupyter-server-proxy 
 
+ENV CVMFS_PARENT_DIR=/jupyter-workspace
 USER root
 WORKDIR /jupyter-workspace
