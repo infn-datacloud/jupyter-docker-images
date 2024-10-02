@@ -70,7 +70,9 @@ RUN python3 -m pip install --no-cache-dir \
 #        jupyter-server-proxy 
 
 # Remove jovyan home directory
-#RUN rm -rf /home/jovyan
+RUN cp /home/jovyan/.bashrc /root/.bashrc && \
+    cp /home/jovyan/.profile /root/.profile && \
+    rm -rf /home/jovyan
 
 USER root
 WORKDIR /jupyter-workspace
