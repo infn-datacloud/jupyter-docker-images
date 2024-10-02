@@ -24,7 +24,7 @@ iam_server = os.environ["OAUTH_ENDPOINT"]
 server_host = socket.gethostbyname(socket.getfqdn())
 os.environ["IAM_INSTANCE"] = iam_server
 
-# c.Spawner.default_url = '/lab'
+c.Spawner.default_url = '/lab'
 
 myenv = os.environ.copy()
 
@@ -475,4 +475,3 @@ if collaborative_service:
     )
 
 c.JupyterHub.services = services
-c.JupyterHub.hub_ip = '0.0.0.0'  # Single user server api connection ip
