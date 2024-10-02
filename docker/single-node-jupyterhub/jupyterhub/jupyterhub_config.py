@@ -25,6 +25,7 @@ server_host = socket.gethostbyname(socket.getfqdn())
 os.environ["IAM_INSTANCE"] = iam_server
 
 c.Spawner.default_url = '/lab'
+c.Spawner.args = ["--allow-root"]
 
 myenv = os.environ.copy()
 
