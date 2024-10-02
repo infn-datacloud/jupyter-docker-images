@@ -445,13 +445,26 @@ c.JupyterHub.admin_access = True
 
 # c.Authenticator.allowed_users = {'test'}
 
+# services = [
+#     {
+#         "name": "idle-culler",
+#         "admin": True,
+#         "command": [sys.executable, "-m", "jupyterhub_idle_culler", "--timeout=7200"],
+#     },
+# ]
+
 services = [
     {
-        "name": "idle-culler",
-        "admin": True,
-        "command": [sys.executable, "-m", "jupyterhub_idle_culler", "--timeout=7200"],
-    },
+        "name": "jupyterhub-idle-culler-service",
+        "command": [
+            sys.executable,
+            "-m", "jupyterhub_idle_culler",
+            "--timeout=3600",
+        ]
+    }
 ]
+
+
 if collaborative_service:
     services.append(
         {
