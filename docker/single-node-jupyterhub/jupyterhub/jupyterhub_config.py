@@ -256,7 +256,7 @@ class CustomSpawner(dockerspawner.DockerSpawner):
         options["img"] = formdata["img"]
         container_image = "".join(formdata["img"])
         print("SPAWN: " + container_image + " IMAGE")
-        self.container_image = container_image
+        self.image = container_image
         options["mem"] = formdata["mem"]
         memory = "".join(formdata["mem"])
         self.mem_limit = memory
