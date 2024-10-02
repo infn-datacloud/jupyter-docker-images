@@ -147,7 +147,6 @@ class EnvAuthenticator(GenericOAuthenticator):
             "auth_state": auth_state,  # self._create_auth_state(token_resp_json, user_data_resp_json)
         }
 
-
 c.JupyterHub.authenticator_class = EnvAuthenticator
 c.GenericOAuthenticator.oauth_callback_url = callback
 
@@ -344,7 +343,6 @@ if post_start_cmd:
     c.DockerSpawner.post_start_cmd = post_start_cmd
 
 c.DockerSpawner.network_name = "jupyterhub"
-
 c.DockerSpawner.http_timeout = 600
 
 # Explicitly set notebook directory because we'll be mounting a host volume to
@@ -423,7 +421,6 @@ if use_cvmfs:
         "bind": f"{notebook_dir}/cvmfs",
         "mode": "ro",
     }
-
 
 # volume_driver is no longer a keyword argument to create_container()
 # c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
