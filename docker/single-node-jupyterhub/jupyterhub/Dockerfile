@@ -7,9 +7,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install --no-cache-dir -U \
-            dockerspawner \
+            # dockerspawner==13.0.0
+            dockerspawner \ 
             jupyterhub-idle-culler \
-            oauthenticator==14.2.0 \
+            # oauthenticator==14.2.0 
+            oauthenticator \
             pip \
             pyjwt \
             setuptools \
