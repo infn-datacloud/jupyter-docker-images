@@ -23,7 +23,7 @@ pipeline {
         HARBOR_CREDENTIALS = 'harbor-paas-credentials'
         JHUB_IMAGE_NAME = 'datacloud-templates/snj-base-jhub'
         BASE_LAB_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
-        TAG_NAME=1.3.0-1
+        TAG_NAME='1.3.0-1'
         RELEASE_VERSION = getReleaseVersion(TAG_NAME)
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
