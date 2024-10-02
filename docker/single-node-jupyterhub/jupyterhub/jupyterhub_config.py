@@ -434,7 +434,7 @@ if use_cvmfs:
 # volume_driver is no longer a keyword argument to create_container()
 # c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
 # Remove containers once they are stopped
-c.DockerSpawner.remove_containers = True
+c.DockerSpawner.remove = True
 # For debugging arguments passed to spawned containers
 c.DockerSpawner.debug = True
 
@@ -475,3 +475,4 @@ if collaborative_service:
     )
 
 c.JupyterHub.services = services
+c.JupyterHub.hub_ip = '0.0.0.0'  # Single user server api connection ip
