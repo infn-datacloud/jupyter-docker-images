@@ -69,3 +69,6 @@ RUN python3 -m pip install --no-cache-dir \
 
 # Remove jovyan home directory
 #RUN rm -rf /home/jovyan
+
+USER root
+WORKDIR /jupyter-workspace
