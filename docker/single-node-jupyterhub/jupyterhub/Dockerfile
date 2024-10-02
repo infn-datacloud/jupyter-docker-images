@@ -7,7 +7,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install --no-cache-dir -U \
-            dockerspawner==12.1.0 \
+            dockerspawner \
             jupyterhub-idle-culler \
             oauthenticator==14.2.0 \
             pip \

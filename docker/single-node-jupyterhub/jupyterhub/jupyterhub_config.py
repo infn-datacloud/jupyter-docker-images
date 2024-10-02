@@ -452,10 +452,8 @@ c.JupyterHub.load_roles = [
             "list:users",
             "read:users:activity",
             "read:servers",
-            "delete:servers",
-            # "admin:users", # if using --cull-users
+            "delete:servers"
         ],
-        # assignment of role's permissions to:
         "services": ["jupyterhub-idle-culler-service"],
     }
 ]
