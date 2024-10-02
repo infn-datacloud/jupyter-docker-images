@@ -1,0 +1,71 @@
+# Image name: docker.io/jgvino/jupyterhub-jlab:v2
+ARG BASE_IMAGE="quay.io/jupyter/minimal-notebook:2024-09-23" 
+FROM ${BASE_IMAGE}
+
+USER root
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# Basic O.S. packages
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
+        curl \
+        fuse \
+        git \
+        graphviz \
+        jq \
+        less \
+        #libargon2-0-dev \
+        libcairo2-dev \
+        libczmq-dev \
+        libffi-dev \
+        libjpeg-dev \
+        libpixman-1-dev \
+        nano \
+        openssh-client \
+        pandoc \
+        rsync \
+        screen \
+        snakemake \
+        software-properties-common \
+        texlive-base \
+        texlive-fonts-recommended \
+        texlive-xetex \
+        tini \
+        vim \
+        wget && \
+        apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Jupyterlab componentes
+RUN python3 -m pip install --no-cache-dir \
+        dask-labextension \
+        h5py \
+        ipywidgets  \
+        jupyter-resource-usage  \
+        jupyter_telemetry  \
+        jupyterlab-git  \
+        jupyterlab-logout \
+        jupyterlab-nvdashboard \
+        jupyterlab-theme-toggler \
+        jupyterlab-topbar-text \
+        jupyterlab-widgets \
+        matplotlib \
+        nbclassic \
+        nbclient \
+        nbconvert \
+        nbdime \
+        nbformat \
+        numpy \
+        pandas \
+        tornado 
+
+# Install vscode (mainteiner Lucio Anderlini)
+#RUN curl -fsSL https://code-server.dev/install.sh | sh
+#RUN python3 -m pip install \ 
+#git+https://github.com/landerlini/jupyter_codeserver_proxy.git \
+#        jupyter-resource-usage \
+#        jupyter-server-proxy 
+
+# Remove jovyan home directory
+RUN rm -rf /home/jovyan
