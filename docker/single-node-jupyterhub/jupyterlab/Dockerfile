@@ -69,5 +69,6 @@ RUN python3 -m pip install \
         jupyter-server-proxy 
 
 ENV CVMFS_PARENT_DIR=/jupyter-workspace
+ENV PATH=/jupyter-workspace/cvmfs/datacloud.infn.it/sw/sts-wire/linux/2.1.5/bin:$PATH
 USER root
 WORKDIR /jupyter-workspace
