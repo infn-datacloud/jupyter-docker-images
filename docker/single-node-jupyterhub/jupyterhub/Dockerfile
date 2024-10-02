@@ -1,5 +1,5 @@
 # Image name: snj-base-jhub
-FROM jupyterhub/jupyterhub:5.2.0
+FROM jupyterhub/jupyterhub:4.1.5
 
 #RUN mkdir -p /.init
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
