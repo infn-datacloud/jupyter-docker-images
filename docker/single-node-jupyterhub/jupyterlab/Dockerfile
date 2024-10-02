@@ -71,6 +71,7 @@ RUN python3 -m pip install --no-cache-dir \
 
 # Remove jovyan home directory
 RUN cp /home/jovyan/.bashrc /root/.bashrc && \
+    source /root/.bashrc && \
     cp /home/jovyan/.profile /root/.profile && \
     rm -rf /home/jovyan
 
