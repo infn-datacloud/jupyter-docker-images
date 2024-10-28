@@ -61,7 +61,7 @@ RUN python3 -m pip install --no-cache-dir \
         pandas \
         tornado 
 
-# Install vscode (mainteiner Lucio Anderlini)
+# Install vscode
 RUN curl -fsSL https://code-server.dev/install.sh | sh
 RUN python3 -m pip install \ 
         git+https://github.com/infn-datacloud/jupyter_codeserver_proxy.git \
