@@ -15,7 +15,7 @@ RUN if [ "$BASE_IMAGE" = "tensorflow/tensorflow:2.7.0rc1-gpu" ] ;  then \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    git=1:2.25.1-1ubuntu3 software-properties-common=0.99.9.12 wget=1.20.3-1ubuntu2 fuse=2.9.9-3 curl=7.68.0-1ubuntu2.22 \
+    git=1:2.25.1-1ubuntu3 software-properties-common=0.99.9.12 wget fuse=2.9.9-3 curl=7.68.0-1ubuntu2.22 \
     build-essential=12.8ubuntu1.1 python3-dev=3.8.2-0ubuntu2 python3-pip=20.0.2-5ubuntu1.10 libargon2-dev=0~20171227-0.2 \
     libffi-dev=3.3-4 libpixman-1-dev=0.38.4-0ubuntu2.1 libcairo2-dev=1.16.0-4ubuntu1 libpangox-1.0-dev=0.0.2-5ubuntu1 \
     libjpeg-dev=8c-2ubuntu8 libczmq-dev=4.2.0-2 curl=7.68.0-1ubuntu2.22 libcurl4-openssl-dev=7.68.0-1ubuntu2.22 \
