@@ -179,9 +179,14 @@ if 'JUPYTERHUB_CRYPT_KEY' not in os.environ:
     )
     c.CryptKeeper.keys = [ os.urandom(32) ]
 
+cvmfs_snapshotter = os.environ["CVMFS_SNAPSHOTTER"]
+spawned_image = os.environ["SPAWNED_IMAGE"]
 c.JupyterHub.spawner_class = 'kubespawner.KubeSpawner'
-c.KubeSpawner.cmd = ['/opt/conda/bin/jupyterhub-singleuser', '--allow-root']
-c.KubeSpawner.image = 'harbor.cloud.infn.it/datacloud-templates/spark:1.2.0'
+if cvmfs_snapshotter == 'true':
+    c.KubeSpawner.cmd = ['/usr/bin/unshare', '-cm', '--keep-caps', '/opt/conda/bin/jupyterhub-singleuser', '--allow-root']
+else:
+    c.KubeSpawner.cmd = ['/opt/conda/bin/jupyterhub-singleuser', '--allow-root']
+c.KubeSpawner.image = spawned_image
 
 # TODO: PUT ENV
 
