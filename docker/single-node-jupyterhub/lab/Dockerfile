@@ -32,10 +32,10 @@ RUN mkdir -p /usr/local/share/dodasts /usr/local/share/dodasts/script /usr/local
     apt-key adv --keyserver hkp://pgp.surfnet.nl --recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
     add-apt-repository "deb https://repo.data.kit.edu/ubuntu/20.04 ./" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
-    liboidc-agent4=4.5.1-1 oidc-agent-cli=4.5.1-1 oidc-agent-desktop=4.5.1-1 oidc-agent=4.5.1-1 && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    liboidc-agent4 oidc-agent-cli oidc-agent-desktop oidc-agent && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* 
     # Install jupyterlab
-    python3 -m pip install --no-cache-dir \
+RUN python3 -m pip install --no-cache-dir \
     idna==3.3 \
     importlib-metadata==6.6.0 \
     ipympl==0.8.2 \
