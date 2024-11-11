@@ -12,6 +12,6 @@ RUN python3 -m pip install --no-cache-dir -U pip==23.0.1 setuptools==67.6.0 whee
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    wget=1.20.3-1ubuntu2 && apt-get clean && rm -rf /var/lib/apt/lists/*
+    wget && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY jupyterhub_config.py /srv/jupyterhub/
