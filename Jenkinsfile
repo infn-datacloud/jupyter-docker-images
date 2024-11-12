@@ -204,53 +204,53 @@ pipeline {
         //     }
         // }
  
-        // stage('Build and Push Jupyter Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${JUP_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push Jupyter Matlab Image') {
+            environment {
+                IMAGE_NAME = "${JUP_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
-        // stage('Build and Push Collaboration Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push Collaboration Matlab Image') {
+            environment {
+                IMAGE_NAME = "${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
-        // stage('Build and Push Parallel Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${PARAL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push Parallel Matlab Image') {
+            environment {
+                IMAGE_NAME = "${PARAL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
-        // stage('Build and Push JaaS User Image') {
-        //     environment {
-        //         IMAGE_NAME = "${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/naas-matlab/jaas-user-containers/jaas_user_containers.Dockerfile docker/naas-matlab/jaas-user-containers"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push JaaS User Image') {
+            environment {
+                IMAGE_NAME = "${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/naas-matlab/jaas-user-containers/jaas_user_containers.Dockerfile docker/naas-matlab/jaas-user-containers"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
         // stage('Build and Push NaaS Matlab Image') {
         //     environment {
