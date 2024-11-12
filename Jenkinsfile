@@ -42,7 +42,7 @@ pipeline {
         NAAS_PARALLEL_IMAGE_NAME = 'datacloud-templates/naas_matlab_parallel'
         SPARK_IMAGE_NAME = 'datacloud-templates/spark'
         JHUB_SPARK_IMAGE_NAME = 'datacloud-templates/jhub-spark'
- 
+        TAG_NAME = "test"
         RELEASE_VERSION = getReleaseVersion(TAG_NAME)
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
