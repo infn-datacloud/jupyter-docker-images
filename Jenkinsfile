@@ -252,29 +252,29 @@ pipeline {
             }
         }
 
-        // stage('Build and Push NaaS Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${NAAS_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push NaaS Matlab Image') {
+            environment {
+                IMAGE_NAME = "${NAAS_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
-        // stage('Build and Push NaaS Parallel Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // } 
+        stage('Build and Push NaaS Parallel Matlab Image') {
+            environment {
+                IMAGE_NAME = "${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        } 
 
         stage('Build and Push Spark Image') {
             environment {
