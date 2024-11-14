@@ -78,7 +78,7 @@ pipeline {
         stage('Build and Push Lab Persistence Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
             }
             steps {
                 script {
@@ -91,7 +91,7 @@ pipeline {
         stage('Build and Push Lab Collaborative Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative/Dockerfile docker/single-node-jupyterhub/jupyterlab-collaborative"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative/Dockerfile docker/single-node-jupyterhub/jupyterlab-collaborative"
             }
             steps {
                 script {
@@ -221,7 +221,7 @@ pipeline {
         stage('Build and Push Lab Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${JUP_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
             }
             steps {
                 script {
@@ -234,7 +234,7 @@ pipeline {
         stage('Build and Push Lab Collaboration Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
             }
             steps {
                 script {
@@ -247,7 +247,7 @@ pipeline {
         stage('Build and Push Parallel Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${PARAL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
             }
             steps {
                 script {
@@ -273,7 +273,7 @@ pipeline {
         stage('Build and Push NaaS Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
             }
             steps {
                 script {
@@ -286,7 +286,7 @@ pipeline {
         stage('Build and Push NaaS Parallel Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
             }
             steps {
                 script {
