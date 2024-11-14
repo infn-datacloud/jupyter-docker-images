@@ -75,7 +75,7 @@ pipeline {
             }
         }
  
-        stage('Build and Push Persistence Image') {
+        stage('Build and Push Lab Persistence Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
@@ -88,7 +88,7 @@ pipeline {
             }
         }
 
-        stage('Build and Push Collaborative Image') {
+        stage('Build and Push Lab Collaborative Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative/Dockerfile docker/single-node-jupyterhub/jupyterlab-collaborative"
@@ -218,7 +218,7 @@ pipeline {
         //     }
         // }
  
-        stage('Build and Push Jupyter Matlab Image') {
+        stage('Build and Push Lab Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${JUP_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
@@ -231,7 +231,7 @@ pipeline {
             }
         }
 
-        stage('Build and Push Collaboration Matlab Image') {
+        stage('Build and Push Lab Collaboration Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
