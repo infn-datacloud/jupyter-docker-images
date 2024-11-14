@@ -20,6 +20,7 @@ pipeline {
     }
     
     environment {
+        REGISTRY_FQDN = 'harbor.cloud.infn.it/'
         HARBOR_CREDENTIALS = 'harbor-paas-credentials'
         JHUB_IMAGE_NAME = 'datacloud-templates/snj-base-jhub'
         BASE_LAB_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
@@ -56,7 +57,8 @@ pipeline {
             steps {
                 script {
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    sh "docker image rm $IMAGE_NAME"
+                    sh "docker image rm ${IMAGE_NAME}"
+                    sh "docker image rm ${REGISTRY_FQDN}:${IMAGE_NAME}"
                 }
             }
         }
