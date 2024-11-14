@@ -58,7 +58,7 @@ pipeline {
                 script {
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
-                    sh "docker image rm ${REGISTRY_FQDN}:${IMAGE_NAME}"
+                    sh "docker image rm ${REGISTRY_FQDN}${IMAGE_NAME}"
                 }
             }
         }
