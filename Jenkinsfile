@@ -52,7 +52,6 @@ pipeline {
         stage('Build and Push JHUB Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                REGISTRY_IMAGE_NAME = 
                 DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterhub/Dockerfile docker/single-node-jupyterhub/jupyterhub"
             }
             steps {
