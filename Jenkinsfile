@@ -20,7 +20,7 @@ pipeline {
     }
     
     environment {
-        REGISTRY_FQDN = 'harbor.cloud.infn.it/'
+        REGISTRY_FQDN = 'harbor.cloud.infn.it'
         HARBOR_CREDENTIALS = 'harbor-paas-credentials'
         JHUB_IMAGE_NAME = 'datacloud-templates/snj-base-jhub'
         BASE_LAB_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
@@ -51,14 +51,14 @@ pipeline {
     stages {
         stage('Build and Push JHUB Image') {
             environment {
-                IMAGE_NAME = "${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                REGISTRY_IMAGE_NAME = 
                 DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterhub/Dockerfile docker/single-node-jupyterhub/jupyterhub"
             }
             steps {
                 script {
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
-                    sh "docker image rm ${REGISTRY_FQDN}${IMAGE_NAME}"
                 }
             }
         }
