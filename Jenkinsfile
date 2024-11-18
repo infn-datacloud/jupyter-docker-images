@@ -231,18 +231,18 @@ pipeline {
             }
         }
 
-        stage('Build and Push Lab Collaboration Matlab Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
-            }
-            steps {
-                script {
-                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    sh "docker image rm ${IMAGE_NAME}"
-                }
-            }
-        }
+        // stage('Build and Push Lab Collaboration Matlab Image') {
+        //     environment {
+        //         IMAGE_NAME = "${REGISTRY_FQDN}/${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
+        //     }
+        //     steps {
+        //         script {
+        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //             sh "docker image rm ${IMAGE_NAME}"
+        //         }
+        //     }
+        // }
 
         stage('Build and Push Parallel Matlab Image') {
             environment {
