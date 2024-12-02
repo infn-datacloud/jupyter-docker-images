@@ -61,7 +61,7 @@ pipeline {
             environment {
                 IMAGE_NAME = "${AIINFN_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 BASE_NAME = "${REGISTRY_FQDN}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg ${BASE_IMAGE} --no-cache -f docker/single-node-jupyterhub/jupyterlab_ai-infn/Dockerfile docker/single-node-jupyterhub/jupyterlab_ai-infn"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f docker/single-node-jupyterhub/jupyterlab_ai-infn/Dockerfile docker/single-node-jupyterhub/jupyterlab_ai-infn"
             }
             steps {
                 script {
