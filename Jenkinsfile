@@ -38,6 +38,7 @@ pipeline {
             steps {
                 script {
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -50,6 +51,7 @@ pipeline {
             steps {
                 script {
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -62,6 +64,7 @@ pipeline {
             steps {
                 script {
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
