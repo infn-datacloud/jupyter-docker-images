@@ -20,6 +20,7 @@ pipeline {
     }
     
     environment {
+        REGISTRY_FQDN = 'harbor.cloud.infn.it'
         HARBOR_CREDENTIALS = 'harbor-paas-credentials'
         JHUB_IMAGE_NAME = 'datacloud-templates/snj-base-jhub'
         BASE_JLAB_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
