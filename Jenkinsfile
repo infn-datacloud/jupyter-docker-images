@@ -20,13 +20,14 @@ pipeline {
     }
     
     environment {
-        REGISTRY_FQDN = 'harbor.cloud.infn.it'
-        REPO_NAME = 'datacloud-templates'
-        HARBOR_CREDENTIALS = 'harbor-paas-credentials'
-        JHUB_IMAGE_NAME = "${REPO_NAME}/snj-base-jhub"
-        BASE_JLAB_IMAGE_NAME = "${REPO_NAME}/snj-base-lab"
-        AIINFN_JLAB_IMAGE_NAME = "${REPO_NAME}/jlab-ai-infn"
-        TAG_NAME='1.3.0-1'
+        HARBOR_CREDENTIALS =        'harbor-paas-credentials'
+        REGISTRY_FQDN =             'harbor.cloud.infn.it'
+        REPO_NAME =                 'datacloud-templates'
+        JHUB_IMAGE_NAME =           'snj-base-jhub'
+        BASE_JLAB_IMAGE_NAME =      'snj-base-lab'
+        AIINFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
+        TAG_NAME =                  '1.3.0-1'
+        
         RELEASE_VERSION = getReleaseVersion(TAG_NAME)
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
@@ -34,7 +35,7 @@ pipeline {
     stages {
         stage('Build and Push JupyterHub Image') {
             environment {
-                IMAGE_NAME = "${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterhub/Dockerfile docker/single-node-jupyterhub/jupyterhub"
             }
             steps {
@@ -47,7 +48,7 @@ pipeline {
         
         stage('Build and Push Base JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterlab/Dockerfile docker/single-node-jupyterhub/jupyterlab"
             }
             steps {
@@ -60,8 +61,8 @@ pipeline {
 
         stage('Build and Push AI-INFN JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${AIINFN_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                BASE_IMAGE = "${REGISTRY_FQDN}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${AIINFN_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f docker/single-node-jupyterhub/jupyterlab_ai-infn/Dockerfile docker/single-node-jupyterhub/jupyterlab_ai-infn"
             }
             steps {
