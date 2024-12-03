@@ -21,10 +21,11 @@ pipeline {
     
     environment {
         REGISTRY_FQDN = 'harbor.cloud.infn.it'
+        REPO_NAME = 'datacloud-templates'
         HARBOR_CREDENTIALS = 'harbor-paas-credentials'
-        JHUB_IMAGE_NAME = 'datacloud-templates/snj-base-jhub'
-        BASE_JLAB_IMAGE_NAME = 'datacloud-templates/snj-base-lab'
-        AIINFN_JLAB_IMAGE_NAME = 'datacloud-templates/jlab-ai-infn'
+        JHUB_IMAGE_NAME = "${REPO_NAME}/snj-base-jhub"
+        BASE_JLAB_IMAGE_NAME = "${REPO_NAME}/snj-base-lab"
+        AIINFN_JLAB_IMAGE_NAME = "${REPO_NAME}/jlab-ai-infn"
         TAG_NAME='1.3.0-1'
         RELEASE_VERSION = getReleaseVersion(TAG_NAME)
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
