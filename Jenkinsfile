@@ -49,57 +49,57 @@ pipeline {
     }
     
     stages {
-        // stage('Build and Push JHUB Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterhub/Dockerfile docker/single-node-jupyterhub/jupyterhub"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push JHUB Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterhub/Dockerfile docker/single-node-jupyterhub/jupyterhub"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
         
-        // stage('Build and Push Base Lab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile docker/single-node-jupyterhub/lab"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push Base Lab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile docker/single-node-jupyterhub/lab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
  
-        // stage('Build and Push Lab Persistence Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push Lab Persistence Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
 
-        // stage('Build and Push Lab Collaborative Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative/Dockerfile docker/single-node-jupyterhub/jupyterlab-collaborative"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push Lab Collaborative Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative/Dockerfile docker/single-node-jupyterhub/jupyterlab-collaborative"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
 
         // #### stage('Build and Push Collaborative Proxy Image') {
         //     environment {
@@ -127,18 +127,18 @@ pipeline {
         //     }
         // }
 
-        // stage('Build and Push Lab GPU Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${BASE_LAB_GPU_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile.gpu docker/single-node-jupyterhub/lab"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push Lab GPU Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${BASE_LAB_GPU_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile.gpu docker/single-node-jupyterhub/lab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
 
         // #### stage('Build and Push Collaborative GPU Image') {
         //     environment {
@@ -218,18 +218,18 @@ pipeline {
         //     }
         // }
  
-        // stage('Build and Push Lab Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${JUP_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push Lab Matlab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${JUP_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
 
         // #### stage('Build and Push Lab Collaboration Matlab Image') {
         //     environment {
@@ -244,57 +244,57 @@ pipeline {
         //     }
         // }
 
-        // stage('Build and Push Parallel Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${PARAL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push Parallel Matlab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${PARAL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
 
-        // stage('Build and Push JaaS User Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/naas-matlab/jaas-user-containers/jaas_user_containers.Dockerfile docker/naas-matlab/jaas-user-containers"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push JaaS User Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/naas-matlab/jaas-user-containers/jaas_user_containers.Dockerfile docker/naas-matlab/jaas-user-containers"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
 
-        // stage('Build and Push NaaS Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // }
+        stage('Build and Push NaaS Matlab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        }
 
-        // stage('Build and Push NaaS Parallel Matlab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
-        //     }
-        //     steps {
-        //         script {
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
-        //         }
-        //     }
-        // } 
+        stage('Build and Push NaaS Parallel Matlab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                    sh "docker image rm ${IMAGE_NAME}"
+                }
+            }
+        } 
 
         stage('Build and Push Spark Image') {
             environment {
