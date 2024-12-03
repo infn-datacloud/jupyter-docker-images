@@ -40,6 +40,7 @@ pipeline {
             }
             steps {
                 script {
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -53,6 +54,7 @@ pipeline {
             }
             steps {
                 script {
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -67,6 +69,7 @@ pipeline {
             }
             steps {
                 script {
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
