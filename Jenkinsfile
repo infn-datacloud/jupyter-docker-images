@@ -22,7 +22,7 @@ pipeline {
     environment {
         HARBOR_CREDENTIALS =        'harbor-paas-credentials'
         REGISTRY_FQDN =             'harbor.cloud.infn.it'
-        REPO_NAME =                 'datacloud-templates'
+        REPO_NAME =                 'datacloud-jupyter'
         JHUB_IMAGE_NAME =           'snj-base-jhub'
         BASE_JLAB_IMAGE_NAME =      'snj-base-lab'
         AIINFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
