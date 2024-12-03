@@ -56,7 +56,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -70,7 +70,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -84,7 +84,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -98,7 +98,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -138,7 +138,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -230,7 +230,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -257,7 +257,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -271,7 +271,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -285,13 +285,12 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
-
         stage('Build and Push NaaS Parallel Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
@@ -299,7 +298,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -313,7 +312,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
@@ -327,7 +326,7 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker image prune -fa && /usr/bin/docker system prune -fa && /usr/bin/docker volume prune -fa"
+                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                     sh "docker image rm ${IMAGE_NAME}"
                 }
