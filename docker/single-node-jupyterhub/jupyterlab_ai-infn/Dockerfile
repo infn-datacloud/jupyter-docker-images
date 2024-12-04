@@ -3,8 +3,8 @@ ARG BASE_IMAGE="harbor.cloud.infn.it/datacloud-templates/snj-base-lab:1.3.0-1"
 FROM ${BASE_IMAGE}
 
 # Install apptainer, cvmfs and openssh-server
-RUN apt update && \
-    apt-get install -y gnupg2 && \
+RUN apt update --allow-unauthenticated && \
+    apt install -y gnupg2 && \
     apt install -y \
         lsb-release \
         software-properties-common \
