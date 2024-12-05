@@ -16,6 +16,7 @@ RUN wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all
     add-apt-repository -y ppa:apptainer/ppa && \
     rm -f cvmfs-release-latest_all.deb 
 
+# Install apptainer, cvmfs and openssh-server
 RUN apt update --allow-unauthenticated && \
     apt install -y \
       apptainer \
