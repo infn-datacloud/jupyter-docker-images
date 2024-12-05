@@ -8,11 +8,13 @@ RUN apt update && \
     apt install -y \
         lsb-release \
         software-properties-common \
-        wget 
+        wget && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb && \
     dpkg -i cvmfs-release-latest_all.deb && \
-    add-apt-repository -y ppa:apptainer/ppa 
+    add-apt-repository -y ppa:apptainer/ppa && \
+    rm -f cvmfs-release-latest_all.deb 
 
 RUN apt update --allow-unauthenticated && \
     apt install -y \
@@ -24,7 +26,7 @@ RUN apt update --allow-unauthenticated && \
       openssh-server \
       xvfb \
     && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* cvmfs-release-latest_all.deb 
+    apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 # Install customized JuiceFS client and sts-wire
 ADD https://pandora.infn.it/public/3423df/dl/juicefs /usr/bin/juicefs 
