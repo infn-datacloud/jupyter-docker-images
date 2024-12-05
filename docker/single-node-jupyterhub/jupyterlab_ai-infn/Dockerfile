@@ -3,6 +3,7 @@ ARG BASE_IMAGE="harbor.cloud.infn.it/datacloud-templates/snj-base-lab:1.3.0-1"
 FROM ${BASE_IMAGE}
 
 # RUN splitted to Install apptainer, cvmfs and openssh-server
+# Install apptainer, cvmfs and openssh-server
 RUN apt update && \
     apt install -y gnupg2 && \
     apt install -y \
@@ -12,10 +13,8 @@ RUN apt update && \
     wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb && \
     dpkg -i cvmfs-release-latest_all.deb && \
     add-apt-repository -y ppa:apptainer/ppa && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* cvmfs-release-latest_all.deb 
-
-# Install apptainer, cvmfs and openssh-server
-RUN apt update --allow-unauthenticated && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* cvmfs-release-latest_all.deb && \
+    apt update --allow-unauthenticated && \
     apt install -y \
       apptainer \
       cvmfs \
