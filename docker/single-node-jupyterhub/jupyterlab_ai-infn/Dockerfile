@@ -8,11 +8,13 @@ RUN apt update && \
     apt install -y \
         lsb-release \
         software-properties-common \
-        wget && \
-    wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb && \
+        wget 
+
+RUN wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb && \
     dpkg -i cvmfs-release-latest_all.deb && \
-    add-apt-repository -y ppa:apptainer/ppa && \
-    apt update  --allow-unauthenticated && \
+    add-apt-repository -y ppa:apptainer/ppa 
+
+RUN apt update --allow-unauthenticated && \
     apt install -y \
       apptainer \
       cvmfs \
