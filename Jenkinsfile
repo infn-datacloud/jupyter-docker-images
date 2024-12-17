@@ -43,7 +43,7 @@ pipeline {
         NAAS_PARALLEL_IMAGE_NAME = 'datacloud-templates/naas_matlab_parallel'
         SPARK_IMAGE_NAME = 'datacloud-templates/spark'
         JHUB_SPARK_IMAGE_NAME = 'datacloud-templates/jhub-spark'
-        TAG_NAME = "test"
+        
         RELEASE_VERSION = getReleaseVersion(TAG_NAME)
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
@@ -58,7 +58,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -72,7 +71,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -86,7 +84,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -100,7 +97,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -112,8 +108,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+                        sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
         //         }
         //     }
         // }
@@ -125,6 +121,7 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
         //             sh "docker image rm ${IMAGE_NAME}"
         //         }
@@ -140,7 +137,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -152,8 +148,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"    
         //         }
         //     }
         // }
@@ -165,8 +161,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"   
         //         }
         //     }
         // }
@@ -178,8 +174,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"   
         //         }
         //     }
         // }
@@ -191,8 +187,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"   
         //         }
         //     }
         // }
@@ -204,8 +200,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"   
         //         }
         //     }
         // }
@@ -217,8 +213,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"   
         //         }
         //     }
         // }
@@ -232,7 +228,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -244,8 +239,8 @@ pipeline {
         //     }
         //     steps {
         //         script {
+        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //             sh "docker image rm ${IMAGE_NAME}"
         //         }
         //     }
         // }
@@ -259,7 +254,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -273,7 +267,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -287,7 +280,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -300,7 +292,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         } 
@@ -314,7 +305,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
@@ -328,7 +318,6 @@ pipeline {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                    // sh "docker image rm ${IMAGE_NAME}"
                 }
             }
         }
