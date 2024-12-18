@@ -7,10 +7,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git=1:2.25.1-1ubuntu3 software-properties-common=0.99.9.12 wget fuse=2.9.9-3 \
-    build-essential=12.8ubuntu1.1 python3-dev=3.8.2-0ubuntu2 python3-pip=20.0.2-5ubuntu1.10 libargon2-dev=0~20171227-0.2 \
-    libffi-dev=3.3-4 libpixman-1-dev=0.38.4-0ubuntu2.1 libcairo2-dev=1.16.0-4ubuntu1 libpangox-1.0-dev=0.0.2-5ubuntu1 \
-    libjpeg-dev=8c-2ubuntu8 libczmq-dev=4.2.0-2 curl=7.68.0-1ubuntu2.22 libcurl4-openssl-dev=7.68.0-1ubuntu2.22 \
-    libssl-dev=1.1.1f-1ubuntu2.22 dirmngr=2.2.19-3ubuntu2.2 gpg-agent=2.2.19-3ubuntu2.2 \
+    build-essential=12.8ubuntu1.1 python3-dev=3.8.2-0ubuntu2 python3-pip libargon2-dev=0~20171227-0.2 \
+    libffi-dev=3.3-4 libpixman-1-dev=0.38.4-0ubuntu2.1 libcairo2-dev libpangox-1.0-dev=0.0.2-5ubuntu1 \
+    libjpeg-dev=8c-2ubuntu8 libczmq-dev=4.2.0-2 curl=7.68.0-1ubuntu2.22 libcurl4-openssl-dev \
+    libssl-dev dirmngr=2.2.19-3ubuntu2.2 gpg-agent=2.2.19-3ubuntu2.2 \
     && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     # Make dodasts folder
     mkdir -p /usr/local/share/dodasts && \
@@ -28,7 +28,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     add-apt-repository "deb https://repo.data.kit.edu/ubuntu/20.04 ./" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    liboidc-agent4=4.5.1-1 oidc-agent-cli=4.5.1-1 oidc-agent-desktop=4.5.1-1 oidc-agent=4.5.1-1 && \
+    liboidc-agent4 oidc-agent-cli oidc-agent-desktop oidc-agent && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     # Install jupyterlab
     python3 -m pip install --no-cache-dir \
