@@ -3,7 +3,7 @@ FROM jupyterhub/k8s-hub:0.11.1
 USER root
 
 RUN apt-get update && \
-    RUN apt-get -y install vim sudo git curl ca-certificates
+    apt-get -y install vim sudo git curl ca-certificates
 
 RUN wget "https://crt.sh/?d=2475254782" -O /usr/local/share/ca-certificates/ca.crt && \                                      
     update-ca-certificates 
