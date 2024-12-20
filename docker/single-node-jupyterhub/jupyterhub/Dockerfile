@@ -11,6 +11,7 @@ RUN python3 -m pip install --no-cache-dir -U \
             dockerspawner \ 
             jupyterhub-idle-culler \
             jupyterhub-kubespawner==7.0.0 \
+            kubernetes \
             # oauthenticator >= 16.0.0 not compatible
             oauthenticator==15.1.0  \
             pip \
