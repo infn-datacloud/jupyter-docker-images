@@ -26,7 +26,7 @@ RUN apt update && \
     && \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
 
-# Install customized JuiceFS client and sts-wire
+# Install customized JuiceFS client
 ADD https://pandora.infn.it/public/3423df/dl/juicefs /usr/bin/juicefs 
 RUN chmod a+rx /usr/bin/juicefs 
 

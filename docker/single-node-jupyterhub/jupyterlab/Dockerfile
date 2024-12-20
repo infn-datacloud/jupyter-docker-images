@@ -1,4 +1,4 @@
-# Image name: docker.io/jgvino/jupyterhub-jlab:v2
+# Image name: harbor.cloud.infn.it/datacloud-templates/snj-base-lab:1.3.0-1
 
 ARG BASE_IMAGE="quay.io/jupyter/minimal-notebook:ubuntu-22.04" 
 FROM ${BASE_IMAGE}

@@ -10,6 +10,7 @@ RUN python3 -m pip install --no-cache-dir -U \
             # dockerspawner==13.0.0 latest in 2024-10-02
             dockerspawner \ 
             jupyterhub-idle-culler \
+            jupyterhub-kubespawner==7.0.0 \
             # oauthenticator >= 16.0.0 not compatible
             oauthenticator==15.1.0  \
             pip \
