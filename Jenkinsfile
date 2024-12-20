@@ -24,6 +24,7 @@ pipeline {
         REGISTRY_FQDN =             'harbor.cloud.infn.it'
         REPO_NAME =                 'datacloud-templates'
         JHUB_IMAGE_NAME =           'snj-base-jhub'
+        K8S_JHUB_IMAGE_NAME =       'jhub-k8s'
         BASE_JLAB_IMAGE_NAME =      'snj-base-lab'
         AIINFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
         STANDALONE_JLAB_IMAGE_NAME ='jlab-standalone'
@@ -48,6 +49,20 @@ pipeline {
             }
         }
         
+        stage('Build and Push JupyterHub k8s Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${K8S_JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterhub-k8s"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+
         stage('Build and Push Base JupyterLab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
