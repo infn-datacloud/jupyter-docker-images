@@ -20,12 +20,12 @@ RUN apt update && \
       cvmfs \
       cvmfs-fuse3 \
       cvmfs-libs \
-#     libgl1-mesa-glx \    DA RISOLVERE
+      libgl1-mesa-glx \    
       openssh-server \
-      snakemake \
       snakemake-executor-plugin-cluster-generic>=1 \
       snakemake-storage-plugin-fs \
       snakemake-storage-plugin-s3 \
+      snakemake>=8 \
       xvfb \
     && \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
