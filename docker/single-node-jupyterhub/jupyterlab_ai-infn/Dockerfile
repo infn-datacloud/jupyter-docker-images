@@ -22,13 +22,16 @@ RUN apt update && \
       cvmfs-libs \
       libgl1-mesa-glx \    
       openssh-server \
-      snakemake-executor-plugin-cluster-generic>=1 \
-      snakemake-storage-plugin-fs \
-      snakemake-storage-plugin-s3 \
-      snakemake>=8 \
       xvfb \
     && \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
+
+# Install snaemake Python modules
+RUN python3 -m pip install --no-cache-dir \
+snakemake-executor-plugin-cluster-generic>=1 \
+snakemake-storage-plugin-fs \
+snakemake-storage-plugin-s3 \
+snakemake>=8 
 
 # Install customized JuiceFS client
 ADD https://pandora.infn.it/public/3423df/dl/juicefs /usr/bin/juicefs 
