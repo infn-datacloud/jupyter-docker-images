@@ -16,8 +16,8 @@ RUN apt update && \
     apt update --allow-unauthenticated && \
     apt install -y \
       apptainer \
-      cvmfs \
-      cvmfs-fuse3 \
+#      cvmfs \
+#      cvmfs-fuse3 \
       cvmfs-libs \
       libgl1-mesa-glx \    
       openssh-server \
