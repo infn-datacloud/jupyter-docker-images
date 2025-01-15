@@ -13,7 +13,6 @@ RUN apt update && \
     wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb && \
     dpkg -i cvmfs-release-latest_all.deb && \
     add-apt-repository -y ppa:apptainer/ppa && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* cvmfs-release-latest_all.deb && \
     apt update --allow-unauthenticated && \
     apt install -y \
       apptainer \
@@ -24,14 +23,14 @@ RUN apt update && \
       openssh-server \
       xvfb \
     && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* 
+    apt-get clean && rm -rf /var/lib/apt/lists/* cvmfs-release-latest_all.deb 
 
 # Install snaemake Python modules
 RUN python3 -m pip install --no-cache-dir \
-snakemake-executor-plugin-cluster-generic>=1 \
-snakemake-storage-plugin-fs \
-snakemake-storage-plugin-s3 \
-snakemake>=8 
+      snakemake-executor-plugin-cluster-generic>=1 \
+      snakemake-storage-plugin-fs \
+      snakemake-storage-plugin-s3 \
+      snakemake>=8 
 
 # Install customized JuiceFS client
 ADD https://pandora.infn.it/public/3423df/dl/juicefs /usr/bin/juicefs 
