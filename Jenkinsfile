@@ -16,7 +16,7 @@ def getReleaseVersion(String tagName) {
 pipeline {
  
     agent {
-        node { label 'jenkinsworker00' }
+        node { label 'jenkinsworker05' }
     }
     
     environment {
