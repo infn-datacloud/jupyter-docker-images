@@ -29,6 +29,7 @@ pipeline {
         AIINFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
         STANDALONE_JLAB_IMAGE_NAME ='jlab-standalone'
         TAG_NAME =                  '1.3.0-1'
+        AI_INFN_TAG_NAME =          'v1.2'
         
         RELEASE_VERSION = getReleaseVersion(TAG_NAME)
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
@@ -65,7 +66,7 @@ pipeline {
 
         stage('Build and Push Base JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
                 DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterlab"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
             }
