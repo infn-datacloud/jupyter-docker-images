@@ -66,7 +66,7 @@ pipeline {
 
         stage('Build and Push Base JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterlab"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
             }
@@ -95,7 +95,7 @@ pipeline {
 
         stage('Build and Push AI-INFN JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${AIINFN_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${AIINFN_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
                 BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterlab_ai-infn"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
