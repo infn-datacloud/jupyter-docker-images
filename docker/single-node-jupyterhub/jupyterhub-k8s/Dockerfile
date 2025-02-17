@@ -17,7 +17,5 @@ RUN echo "jovyan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN rm /bin/sh && \
     ln -s /bin/bash /bin/sh
 
-USER $NB_UID
-
 CMD ["/usr/bin/start.sh", "jupyterhub"]
 
