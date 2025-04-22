@@ -10,7 +10,7 @@ import dockerspawner
 from oauthenticator.generic import GenericOAuthenticator
 from tornado import gen
 
-c = get_config()
+c = get_config()  # noqa: F821
 
 c.JupyterHub.tornado_settings = {
     "max_body_size": 1048576000,

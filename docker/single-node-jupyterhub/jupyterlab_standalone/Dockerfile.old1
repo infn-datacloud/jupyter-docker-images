@@ -1,0 +1,12 @@
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y software-properties-common wget python3-pip git fuse 
+
+RUN wget "https://crt.sh/?d=2475254782" -O /usr/local/share/ca-certificates/ca.crt 
+
+RUN update-ca-certificates 
+
+RUN python3 -m pip --no-cache-dir install --upgrade pip
+RUN pip install --no-cache-dir jupyterhub jupyterlab

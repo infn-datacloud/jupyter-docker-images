@@ -14,7 +14,7 @@ RUN apt update && \
 ADD https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 /usr/local/bin/sts-wire
 RUN chmod +x /usr/local/bin/sts-wire
 
-# Install required apt packages for all the extensions and use bash instead of dash
+# Remove unused jupyterlab-nvdashboard module and use bash instead of dash
 RUN echo "jovyan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     rm /bin/sh && ln -s /bin/bash /bin/sh && \
     pip uninstall -y jupyterlab-nvdashboard
