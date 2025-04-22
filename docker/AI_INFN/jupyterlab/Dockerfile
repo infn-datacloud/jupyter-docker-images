@@ -30,6 +30,7 @@ RUN python3 -m pip install --no-cache-dir \
       snakemake-executor-plugin-cluster-generic>=1 \
       snakemake-storage-plugin-fs \
       snakemake-storage-plugin-s3 \
+      snakemake-storage-plugin-webdav \
       snakemake>=8 
 
 # Install customized JuiceFS client
