@@ -23,14 +23,20 @@ pipeline {
         HARBOR_CREDENTIALS =        'harbor-paas-credentials'
         REGISTRY_FQDN =             'harbor.cloud.infn.it'
         REPO_NAME =                 'datacloud-templates'
-        JHUB_IMAGE_NAME =           'snj-base-jhub'
-        K8S_JHUB_IMAGE_NAME =       'jhub-k8s'
-        BASE_JLAB_IMAGE_NAME =      'snj-base-lab'
-        AIINFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
-        STANDALONE_JLAB_IMAGE_NAME ='jlab-standalone'
-        TAG_NAME =                  '2.0.0'
-        AI_INFN_TAG_NAME =          'v1.3'
         
+        // Singlenode docker images
+        JHUB_IMAGE_NAME =           'jhub-singlenode'
+        BASE_JLAB_IMAGE_NAME =      'jlab-base'
+        STANDALONE_JLAB_IMAGE_NAME ='jlab-standalone'
+        AIINFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
+
+        // Naas docker images
+        NAAS_JHUB_IMAGE_NAME =      'jhub-naas'
+        NAAS_JLAB_IMAGE_NAME =      'jlab-naas'
+
+        // Version
+        TAG_NAME =                  'v2.0.0-j4.1.0'
+        AI_INFN_TAG_NAME =          'ai1.3'
         RELEASE_VERSION = getReleaseVersion(TAG_NAME)
         SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
@@ -39,7 +45,7 @@ pipeline {
         stage('Build and Push JupyterHub Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterhub"
+                DOCKERFILE_PATH = "docker/singlenode/jhub"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
             }
             steps {
@@ -50,24 +56,10 @@ pipeline {
             }
         }
         
-        // stage('Build and Push JupyterHub k8s Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${K8S_JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterhub-k8s"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
-
         stage('Build and Push Base JupyterLab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterlab"
+                DOCKERFILE_PATH = "docker/singlenode/jlab-base"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
             }
             steps {
@@ -78,27 +70,55 @@ pipeline {
             }
         }
 
-        // stage('Build and Push Stand-Alone JupyterLab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterlab_standalone"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push Standalone JupyterLab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKERFILE_PATH = "docker/singlenode/jlab-standalone"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
         stage('Build and Push AI-INFN JupyterLab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${AIINFN_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
                 BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKERFILE_PATH = "docker/single-node-jupyterhub/jupyterlab_ai-infn"
+                DOCKERFILE_PATH = "docker/AI_INFN/jlab"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+
+        stage('Build and Push NaaS k8s JupyterHub Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKERFILE_PATH = "docker/NaaS/jhub"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+        
+        stage('Build and Push NaaS k8s JupyterLab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKERFILE_PATH = "docker/NaaS/jlab"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
             }
             steps {
                 script {
