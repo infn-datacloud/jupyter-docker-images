@@ -1,5 +1,5 @@
-# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-ai-infn:1.3.0-1-v4.0.5
-ARG BASE_IMAGE="harbor.cloud.infn.it/datacloud-templates/snj-base-lab:1.3.0-1" 
+# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-ai-infn:v2.0.0-j4.1.0-ai1.3" 
+ARG BASE_IMAGE="harbor.cloud.infn.it/datacloud-templates/jlab-base:v2.0.0-j4.1.0" 
 FROM ${BASE_IMAGE}
 
 # RUN splitted to Install apptainer, cvmfs and openssh-server
