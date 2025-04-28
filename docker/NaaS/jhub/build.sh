@@ -4,7 +4,7 @@ export REPO_NAME='datacloud-templates'
 export K8S_JHUB_IMAGE_NAME='jhub-k8s'
 export TAG_NAME='2.0.0-j4.1.0'
 export IMAGE_NAME="${REGISTRY_FQDN}/${REPO_NAME}/${K8S_JHUB_IMAGE_NAME}:${TAG_NAME}"
-export DOCKERFILE_PATH="docker/NaaS/jupyterhub-k8s"
+#export DOCKERFILE_PATH="docker/single-node-jupyterhub/jupyterlab_standalone"
 export DOCKER_BUILD_OPTIONS="."
 docker build -t $IMAGE_NAME $DOCKER_BUILD_OPTIONS
 docker push $IMAGE_NAME

@@ -1,4 +1,4 @@
-# harbor.cloud.infn.it/datacloud-templates/jupyterlab-k8s:2.0.0-j4.1.0
+# harbor.cloud.infn.it/datacloud-templates/jlab-k8s:2.0.0-j4.1.0
 
 ARG BASE_IMAGE="jupyterhub/k8s-singleuser-sample:4.1.0"
 FROM ${BASE_IMAGE}
@@ -73,8 +73,8 @@ RUN python3 -m pip install --no-cache-dir \
 
 # Install oidc-agent
 RUN apt update && \
-apt install -y oidc-agent && \
-apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt install -y oidc-agent && \  
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install sts-wire
 ADD https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 /usr/local/bin/sts-wire
