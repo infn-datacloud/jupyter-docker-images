@@ -22,16 +22,26 @@ RUN apt update && \
       libgl1-mesa-glx \    
       openssh-server \
       xvfb \
+      # Remote desktop:
+      dbus-x11 \
+      xorg \
+      xfce4 xfce4-panel xfce4-session xfce4-settings breeze-icon-theme kde-plasma-desktop \
+      tigervnc-standalone-server \
     && \
     apt-get clean && rm -rf /var/lib/apt/lists/* cvmfs-release-latest_all.deb 
 
-# Install snaemake Python modules
+# Update conda and python version
+RUN conda update -n base -c conda-forge conda && \
+    conda update -n base python
+    
+# Install snakemake Python modules
 RUN python3 -m pip install --no-cache-dir \
+      jupyter-remote-desktop-proxy \
       snakemake-executor-plugin-cluster-generic>=1 \
-      snakemake-storage-plugin-fs \
       snakemake-storage-plugin-s3 \
-      snakemake-storage-plugin-webdav \
-      snakemake>=8 
+      git+https://github.com/landerlini/snakemake-storage-plugin-webdav \
+      git+https://github.com/landerlini/snakemake-storage-plugin-fs \
+      snakemake>=9
 
 # Install customized JuiceFS client
 ADD https://pandora.infn.it/public/3423df/dl/juicefs /usr/bin/juicefs 
