@@ -39,7 +39,7 @@ RUN jupyter serverextension enable --py sparkconnector &&  mkdir -p /home/$NB_US
 \n    c.NotebookApp.token = os.environ[\"JUPYTER_TOKEN\"] \
 " > /home/$NB_USER/.jupyter/jupyter_notebook_config.py
 
-RUN cd ${SPARK_BASE} && wget -nv -qO- https://downloads.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz | tar zx && mv spark-3.5.1-bin-hadoop3 spark
+RUN cd ${SPARK_BASE} && wget -nv -qO- https://archive.apache.org/dist/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz | tar zx && mv spark-3.5.1-bin-hadoop3 spark
 
 ADD  https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.99/aws-java-sdk-bundle-1.12.99.jar \
      https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar ${SPARK_HOME}/jars/

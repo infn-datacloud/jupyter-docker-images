@@ -83,7 +83,7 @@ class SparkConfiguration(object):
          .setAppName("Notebook")\
          .set("spark.executor.memory", "1g")\
          .set("spark.executor.instances", "1")\
-         .set("spark.kubernetes.container.image", "harbor.cloud.infn.it/datacloud-templates/spark:1.2.0")\
+         .set("spark.kubernetes.container.image", "harbor.cloud.infn.it/datacloud-templates/spark:1.2.1")\
          .set("spark.kubernetes.authenticate.driver.serviceAccountName","default")\
          .set("spark.submit.deployMode", "client")\
          .set('spark.extraListeners', 'sparkmonitor.listener.JupyterSparkMonitorListener')\

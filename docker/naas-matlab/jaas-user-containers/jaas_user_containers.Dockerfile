@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y software-properties-common wget python3
 RUN apt-key adv --keyserver hkp://pgp.surfnet.nl --recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 && \
     add-apt-repository "deb https://repo.data.kit.edu/ubuntu/20.04 ./" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
-    liboidc-agent4=4.5.1-1 oidc-agent-cli=4.5.1-1 oidc-agent-desktop=4.5.1-1 oidc-agent=4.5.1-1
+    liboidc-agent4 oidc-agent-cli oidc-agent-desktop oidc-agent
 
 COPY ./certs/geant-ov-rsa-ca.crt /usr/local/share/ca-certificates/ca.crt
 
