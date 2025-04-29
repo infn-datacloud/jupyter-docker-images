@@ -295,29 +295,29 @@ pipeline {
             }
         } 
 
-        stage('Build and Push Spark Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${SPARK_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/spark/Dockerfile docker/spark"
-            }
-            steps {
-                script {
-                    sh "/usr/bin/docker system prune -fa"
-                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                } 
-            }
-        }
-
         stage('Build and Push JHUB Spark Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${JHUB_SPARK_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/jupyter-hub/Dockerfile docker/jupyter-hub"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/spark/jhub/Dockerfile docker/spark/jhub"
             }
             steps {
                 script {
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
+            }
+        }
+
+        stage('Build and Push JLAB Spark Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${SPARK_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/spark/jlab/Dockerfile docker/spark/jlab"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                } 
             }
         }
     }
