@@ -1,4 +1,4 @@
-# harbor.cloud.infn.it/datacloud-templates/jlab-k8s:2.0.0-j4.1.0
+# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-naas:2.0.0-j4.1.0
 
 ARG BASE_IMAGE="jupyterhub/k8s-singleuser-sample:4.1.0"
 FROM ${BASE_IMAGE}

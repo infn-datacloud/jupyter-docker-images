@@ -1,4 +1,5 @@
-# Image name: snj-base-jhub
+# Image name: harbor.cloud.infn.it/datacloud-templates/jhub-naas:2.0.0-j4.1.0
+
 FROM jupyterhub/jupyterhub:4.1.5
 
 #RUN mkdir -p /.init
