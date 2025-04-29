@@ -16,7 +16,6 @@ def getReleaseVersion(String tagName) {
 pipeline {
  
     agent {
-        node { label 'jenkinsworker05' }
         node { label 'jenkins-node-label-1' }
     }
     
@@ -80,7 +79,6 @@ pipeline {
             steps {
                 script {
                     sh "/usr/bin/docker system prune -fa"
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
@@ -88,7 +86,7 @@ pipeline {
         
         stage('Build and Push Base JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKERFILE_PATH = "docker/singlenode/jlab-base"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
             }
@@ -99,13 +97,9 @@ pipeline {
                 }
             }
         }
- 
-        stage('Build and Push Lab Persistence Image') {
 
         stage('Build and Push Standalone JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/single-node-jupyterhub/lab/base-persistence/Dockerfile docker/single-node-jupyterhub/lab/base-persistence"
                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKERFILE_PATH = "docker/singlenode/jlab-standalone"
@@ -113,7 +107,6 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
                     sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
@@ -130,41 +123,30 @@ pipeline {
             steps {
                 script {
                     sh "/usr/bin/docker system prune -fa"
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
         }
 
-<<<<<<< HEAD
-        stage('Build and Push AI-INFN JupyterLab Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${AIINFN_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
-                BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKERFILE_PATH = "docker/AI_INFN/jlab"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
-=======
-        // #### stage('Build and Push Collaborative Proxy Image') {
+        // stage('Build and Push Collaborative Proxy Image') {
         //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${COLLABORATIVE_PROXY_IMAGE_NAME}:${env.RELEASE_VERSION}"
+        //         IMAGE_NAME = "${COLLABORATIVE_PROXY_IMAGE_NAME}:${env.RELEASE_VERSION}"
         //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative-proxy/Dockerfile docker/single-node-jupyterhub/jupyterlab-collaborative-proxy"
         //     }
         //     steps {
         //         script {
-        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
         //         }
         //     }
         // }
 
-        // #### stage('Build and Push Notebook Image') {
+        // stage('Build and Push Notebook Image') {
         //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${NOTEBOOK_IMAGE_NAME}:${env.RELEASE_VERSION}"
+        //         IMAGE_NAME = "${NOTEBOOK_IMAGE_NAME}:${env.RELEASE_VERSION}"
         //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/notebook/Dockerfile docker/single-node-jupyterhub/notebook"
         //     }
         //     steps {
         //         script {
-        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
         //         }
         //     }
@@ -172,33 +154,89 @@ pipeline {
 
         stage('Build and Push Lab GPU Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${BASE_LAB_GPU_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${BASE_LAB_GPU_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile.gpu docker/single-node-jupyterhub/lab"
->>>>>>> 10c55b1bc8b4b00bb13d5efb4c7c9894b68292d5
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
         }
 
-        stage('Build and Push NaaS k8s JupyterHub Image') {
+        stage('Build and Push Collaborative GPU Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKERFILE_PATH = "docker/NaaS/jhub"
-                DOCKER_BUILD_OPTIONS = "--no-cache -f ${DOCKERFILE_PATH}/Dockerfile ${DOCKERFILE_PATH}"
+                IMAGE_NAME = "${LAB_COLLABORATIVE_GPU_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative/Dockerfile.gpu docker/single-node-jupyterhub/jupyterlab-collaborative"
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+
+        stage('Build and Push ML_INFN Image') {
+            environment {
+                IMAGE_NAME = "${ML_INFN_BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_GPU_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/ML-INFN/lab/Dockerfile docker/ML-INFN/lab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+
+        stage('Build and Push ML INFN Collaborative Image') {
+            environment {
+                IMAGE_NAME = "${ML_INFN_LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_COLLABORATIVE_GPU_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/ML-INFN/jupyterlab-collaborative/Dockerfile docker/ML-INFN/jupyterlab-collaborative"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+
+        stage('Build and Push Base Lab CC7 Image') {
+            environment {
+                IMAGE_NAME = "${BASE_LAB_CC7_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile.cc7 docker/single-node-jupyterhub/lab"
+            }
+            steps {
+                script {
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+
+        stage('Build and Push Cygno Image') {
+            environment {
+                IMAGE_NAME = "${CYGNO_LAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_CC7_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/CYGNO/lab/Dockerfile docker/CYGNO"
+            }
+            steps {
+                script {
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
         }
         
-        stage('Build and Push NaaS k8s JupyterLab Image') {
+        // stage('Build and Push Cygno WN Image') {
+        //     environment {
+        //         IMAGE_NAME = "${CYGNO_LAB_WN_IMAGE_NAME}:${env.RELEASE_VERSION}"
+        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/CYGNO/wn/Dockerfile docker/CYGNO"
+        //     }
+        //     steps {
+        //         script {
+        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //         }
+        //     }
+        // }
+ 
+        stage('Build and Push Jupyter Matlab Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKERFILE_PATH = "docker/NaaS/jlab"
@@ -206,182 +244,90 @@ pipeline {
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
         }
-=======
-        // #### stage('Build and Push Collaborative GPU Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${LAB_COLLABORATIVE_GPU_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/jupyterlab-collaborative/Dockerfile.gpu docker/single-node-jupyterhub/jupyterlab-collaborative"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
 
-        // #### stage('Build and Push ML_INFN Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${ML_INFN_BASE_LAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_GPU_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/ML-INFN/lab/Dockerfile docker/ML-INFN/lab"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
-
-        // #### stage('Build and Push ML INFN Collaborative Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${ML_INFN_LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_COLLABORATIVE_GPU_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/ML-INFN/jupyterlab-collaborative/Dockerfile docker/ML-INFN/jupyterlab-collaborative"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
-
-        // #### stage('Build and Push Base Lab CC7 Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${BASE_LAB_CC7_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/single-node-jupyterhub/lab/Dockerfile.cc7 docker/single-node-jupyterhub/lab"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
-
-        // #### stage('Build and Push Cygno Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${CYGNO_LAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_LAB_CC7_IMAGE_NAME}:${env.RELEASE_VERSION} --no-cache -f docker/CYGNO/lab/Dockerfile docker/CYGNO"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
-        
-        // #### stage('Build and Push Cygno WN Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${CYGNO_LAB_WN_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f docker/CYGNO/wn/Dockerfile docker/CYGNO"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
- 
-        stage('Build and Push Lab Matlab Image') {
+        stage('Build and Push Collaboration Matlab Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${JUP_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/persistence.Dockerfile docker/jupyter-matlab"
+                IMAGE_NAME = "${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
         }
 
-        // #### stage('Build and Push Lab Collaboration Matlab Image') {
+        // stage('Build and Push Parallel Matlab Image') {
         //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${COLL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_COLLABORATIVE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab/collaborative.Dockerfile docker/jupyter-matlab"
+        //         IMAGE_NAME = "${PARAL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
         //     }
         //     steps {
         //         script {
-        //             sh "/usr/bin/docker system prune -fa"
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
         //         }
         //     }
         // }
-
-        stage('Build and Push Parallel Matlab Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${PARAL_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${LAB_PERSISTENCE_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/jupyter-matlab-parallel/persistence-parallel.Dockerfile docker/jupyter-matlab-parallel"
-            }
-            steps {
-                script {
-                    sh "/usr/bin/docker system prune -fa"
-                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                }
-            }
-        }
 
         stage('Build and Push JaaS User Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                IMAGE_NAME = "${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--no-cache -f docker/naas-matlab/jaas-user-containers/jaas_user_containers.Dockerfile docker/naas-matlab/jaas-user-containers"
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
         }
 
-        stage('Build and Push NaaS Matlab Image') {
+        // stage('Build and Push NaaS Matlab Image') {
+        //     environment {
+        //         IMAGE_NAME = "${NAAS_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
+        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
+        //     }
+        //     steps {
+        //         script {
+        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //         }
+        //     }
+        // }
+
+        // stage('Build and Push NaaS Parallel Matlab Image') {
+        //     environment {
+        //         IMAGE_NAME = "${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
+        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
+        //     }
+        //     steps {
+        //         script {
+        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //         }
+        //     }
+        // } 
+
+        stage('Build and Push Spark Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_MATLAB_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab/naas.Dockerfile docker/naas-matlab"
+                IMAGE_NAME = "${SPARK_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/spark/Dockerfile docker/spark"
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 }
             }
         }
-        stage('Build and Push NaaS Parallel Matlab Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${NAAS_PARALLEL_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${REGISTRY_FQDN}/${JAAS_USER_IMAGE_NAME}:${env.RELEASE_VERSION} --build-arg MATLAB_RELEASE=r2023b --build-arg MATLAB_PRODUCT_LIST='MATLAB MATLAB_Parallel_Server Parallel_Computing_Toolbox' --build-arg LICENSE_SERVER='' --no-cache -f docker/naas-matlab-parallel/naas-parallel.Dockerfile docker/naas-matlab-parallel"
-            }
-            steps {
-                script {
-                    sh "/usr/bin/docker system prune -fa"
-                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                }
-            }
-        } 
 
         stage('Build and Push JHUB Spark Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${JHUB_SPARK_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/spark/jhub/Dockerfile docker/spark/jhub"
->>>>>>> 10c55b1bc8b4b00bb13d5efb4c7c9894b68292d5
-
-
-        stage('Build and Push JLAB Spark Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${SPARK_IMAGE_NAME}:${env.RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/spark/jlab/Dockerfile docker/spark/jlab"
+                IMAGE_NAME = "${JHUB_SPARK_IMAGE_NAME}:${env.RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f docker/jupyter-hub/Dockerfile docker/jupyter-hub"
             }
             steps {
                 script {
-                    sh "/usr/bin/docker system prune -fa"
                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                 } 
             }
