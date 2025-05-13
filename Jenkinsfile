@@ -48,7 +48,7 @@ pipeline {
         AI_INFN_JLAB_PATH =          'docker/ai_infn/jlab'
 
         // Spark section
-        SPARK_TAG_NAME =             's2.0.0'
+        SPARK_TAG_NAME =             's2.0'
         SPARK_JHUB_IMAGE_NAME =      'jhub-spark'
         SPARK_JLAB_IMAGE_NAME =      'jlab-spark'
         SPARK_JHUB_PATH =            'docker/spark/jhub'
@@ -165,7 +165,6 @@ pipeline {
                 }
             }
         }
-
     }
     
     post {
