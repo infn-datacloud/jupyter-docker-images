@@ -35,17 +35,17 @@ pipeline {
         SN_JHUB_PATH =               'docker/singlenode/jhub'
         SN_JLAB_BASE_PATH =          'docker/singlenode/jlab-base'
         SN_JLAB_STANDALONE_PATH =    'docker/singlenode/jhub-standalone'
-        
-        // Naas section
-        NAAS_JHUB_IMAGE_NAME =       'jhub-naas'
-        NAAS_JLAB_IMAGE_NAME =       'jlab-naas'
-        NAAS_JHUB_PATH =             'docker/naas/jhub'
-        NAAS_JLAB_PATH =             'docker/naas/jlab'
 
         // AI_INFN section
         AI_INFN_TAG_NAME =           'ai1.3'
         AI_INFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
         AI_INFN_JLAB_PATH =          'docker/ai_infn/jlab'
+
+        // Naas section
+        NAAS_JHUB_IMAGE_NAME =       'jhub-naas'
+        NAAS_JLAB_IMAGE_NAME =       'jlab-naas'
+        NAAS_JHUB_PATH =             'docker/naas/jhub'
+        NAAS_JLAB_PATH =             'docker/naas/jlab'
 
         // Spark section
         SPARK_TAG_NAME =             's2.0'
