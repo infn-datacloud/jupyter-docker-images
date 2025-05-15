@@ -34,7 +34,7 @@ pipeline {
         STANDALONE_JLAB_IMAGE_NAME = 'jlab-standalone'
         SN_JHUB_PATH =               'docker/singlenode/jhub'
         SN_JLAB_BASE_PATH =          'docker/singlenode/jlab-base'
-        SN_JLAB_STANDALONE_PATH =    'docker/singlenode/jhub-standalone'
+        SN_JLAB_STANDALONE_PATH =    'docker/singlenode/jlab-standalone'
 
         // AI_INFN section
         AI_INFN_TAG_NAME =           'ai1.3'
