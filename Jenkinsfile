@@ -23,7 +23,7 @@ pipeline {
         // Harbor section
         HARBOR_CREDENTIALS =         'harbor-paas-credentials'
         REGISTRY_FQDN =              'harbor.cloud.infn.it'
-        REPO_NAME =                  'datacloud-templates'
+        REPO_NAME =                  'datacloud-jupyter'
         
         // General section
         TAG_NAME =                   '2.0.0'
