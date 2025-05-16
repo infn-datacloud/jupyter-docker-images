@@ -26,7 +26,7 @@ pipeline {
         REPO_NAME =                  'datacloud-templates'
         
         // General section
-        TAG_NAME =                   'v2.0.0'
+        TAG_NAME =                   '2.0.0'
 
         // Singlenode section
         JHUB_IMAGE_NAME =            'jhub-singlenode'
