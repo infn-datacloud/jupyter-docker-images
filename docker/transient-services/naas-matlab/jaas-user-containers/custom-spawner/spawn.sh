@@ -11,7 +11,9 @@ oidc-gen infncloud --issuer $IAM_SERVER \
  --confirm-yes \
  --scope "openid profile email" \
  --redirect-uri http://localhost:8843 \
- --pw-cmd "echo \"DUMMY PWD\""
+ --pw-cmd "echo \"DUMMY PWD\"" \
+ --reauthenticate
+
 
 kill `ps faux | grep "sts-wire ${USERNAME}" | awk '{ print $2 }'`
 kill `ps faux | grep ".${USERNAME}" | awk '{ print $2 }'`
