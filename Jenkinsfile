@@ -37,6 +37,7 @@ pipeline {
         SN_JLAB_STANDALONE_PATH =    'docker/singlenode/jlab-standalone'
 
         // AI_INFN section
+        AI_INFN_REPO_NAME =          'unpacked' 
         AI_INFN_TAG_NAME =           'ai1.3'
         AI_INFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
         AI_INFN_JLAB_PATH =          'docker/ai_infn/jlab'
@@ -102,7 +103,7 @@ pipeline {
 
         stage('Build and Push AI_INFN JupyterLab Image') {
             environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
+                IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
                 BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
             }
