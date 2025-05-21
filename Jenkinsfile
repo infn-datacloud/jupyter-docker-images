@@ -115,32 +115,6 @@ pipeline {
             }
         }
 
-        stage('Build and Push Naas JupyterHub Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
-            }
-            steps {
-                script {
-                    sh "/usr/bin/docker system prune -fa"
-                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                }
-            }
-        }
-
-        stage('Build and Push Naas JupyterLab Image') {
-            environment {
-                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JLAB_PATH}/Dockerfile ${NAAS_JLAB_PATH}"
-            }
-            steps {
-                script {
-                    sh "/usr/bin/docker system prune -fa"
-                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                }
-            }
-        }
-
         stage('Build and Push Spark JupyterHub Image') {
             environment {
                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JHUB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
@@ -166,6 +140,33 @@ pipeline {
                 }
             }
         }
+
+        stage('Build and Push Naas JupyterLab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JLAB_PATH}/Dockerfile ${NAAS_JLAB_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+
+        stage('Build and Push Naas JupyterHub Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
+        
     }
     
     post {
