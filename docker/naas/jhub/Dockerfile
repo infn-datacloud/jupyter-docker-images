@@ -14,9 +14,10 @@ RUN apt-get update && \
         wget && \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
 
-RUN wget "https://crt.sh/?d=2475254782" --no-check-certificate -O /usr/local/share/ca-certificates/ca.crt 
-RUN update-ca-certificates 
-RUN wget https://baltig.infn.it/infn-cloud/web-site/-/raw/master/imgs/INFN_Cloud/Sito/selezione_sito_cloud/INFN_Cloud_logo_home.png -O /etc/logo.png && \
+#RUN wget "https://crt.sh/?d=2475254782" --no-check-certificate -O /usr/local/share/ca-certificates/ca.crt 
+RUN curl "https://crt.sh/?d=2475254782" --insecure --output /usr/local/share/ca-certificates/ca.crt && \
+    update-ca-certificates && \
+    wget https://baltig.infn.it/infn-cloud/web-site/-/raw/master/imgs/INFN_Cloud/Sito/selezione_sito_cloud/INFN_Cloud_logo_home.png -O /etc/logo.png && \
     echo "jovyan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers 
     
 # Use bash instead of dash
