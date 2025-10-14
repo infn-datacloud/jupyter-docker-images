@@ -41,7 +41,8 @@ RUN python3 -m pip install --no-cache-dir \
       snakemake-storage-plugin-s3 \
       git+https://github.com/landerlini/snakemake-storage-plugin-webdav \
       git+https://github.com/landerlini/snakemake-storage-plugin-fs \
-      snakemake>=9
+      git+https://github.com/landerlini/snakemake-storage-helper \
+      snakemake>=9.11
 
 # Install customized JuiceFS client
 ADD https://pandora.infn.it/public/3423df/dl/juicefs /usr/bin/juicefs 
