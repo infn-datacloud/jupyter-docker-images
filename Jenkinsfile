@@ -139,7 +139,7 @@ pipeline {
         //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
         //         }
         //     }
-        // }
+        // } 
 
         stage('Build and Push Naas JupyterLab Image') {
             environment {
