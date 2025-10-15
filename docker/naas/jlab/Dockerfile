@@ -14,7 +14,6 @@ RUN echo "jovyan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        boto3==1.35.99 \
         build-essential \
         curl \
         fuse \
@@ -52,6 +51,7 @@ RUN python3 -m pip install \
 
 # Install Jupyterlab componentes
 RUN python3 -m pip install --no-cache-dir \
+    boto3==1.35.99 \
     dask-labextension \
     h5py \
     ipywidgets  \
