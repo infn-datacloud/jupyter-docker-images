@@ -1,0 +1,1 @@
+AWS_CONFIG_FILE=./aws-config rclone --config ./config mount rgw: /jupyterlab-workspace/s3-rclone/

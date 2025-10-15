@@ -18,20 +18,24 @@ kill `ps faux | grep "sts-wire scratch" | awk '{ print $2 }'`
 kill `ps faux | grep ".scratch" | awk '{ print $2 }'`
 
 mkdir -p /jupyterlab-workspace/s3/
+mkdir -p /jupyterlab-workspace/s3-rclone/
 mkdir -p /jupyterlab-workspace/local/
 mkdir -p /jupyterlab-workspace/s3/${USERNAME}
 mkdir -p /jupyterlab-workspace/s3/scratch
 mkdir -p /opt/user_data/cache/${USERNAME}
 mkdir -p /opt/user_data/cache/scratch
 
-sleep 1 && nice -n 19 sts-wire https://iam.cloud.infn.it/ \
-	${USERNAME} https://rgw.cloud.infn.it/ IAMaccess object \
-	/${USERNAME} /jupyterlab-workspace/s3/${USERNAME}  \
-    --localCache full --tryRemount --noDummyFileCheck \
-    --localCacheDir "/opt/user_data/cache/${USERNAME}" > .mount_log_${USERNAME}.txt &
+cd /jupyterlab-workspace/.init/
+bash init.sh
 
-sleep 2 && nice -n 19 sts-wire https://iam.cloud.infn.it/ \
-	scratch https://rgw.cloud.infn.it/ IAMaccess object  \
-	/scratch /jupyterlab-workspace/s3/scratch  \
-    --localCache full --tryRemount --noDummyFileCheck \
-    --localCacheDir "/opt/user_data/cache/scratch" > .mount_log_scratch.txt &
+# sleep 1 && nice -n 19 sts-wire https://iam.cloud.infn.it/ \
+# 	${USERNAME} https://rgw.cloud.infn.it/ IAMaccess object \
+# 	/${USERNAME} /jupyterlab-workspace/s3/${USERNAME}  \
+#     --localCache full --tryRemount --noDummyFileCheck \
+#     --localCacheDir "/opt/user_data/cache/${USERNAME}" > .mount_log_${USERNAME}.txt &
+
+# sleep 2 && nice -n 19 sts-wire https://iam.cloud.infn.it/ \
+# 	scratch https://rgw.cloud.infn.it/ IAMaccess object  \
+# 	/scratch /jupyterlab-workspace/s3/scratch  \
+#     --localCache full --tryRemount --noDummyFileCheck \
+#     --localCacheDir "/opt/user_data/cache/scratch" > .mount_log_scratch.txt &

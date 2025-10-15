@@ -14,6 +14,7 @@ RUN echo "jovyan ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        boto3==1.35.99 \
         build-essential \
         curl \
         fuse \
@@ -76,12 +77,21 @@ RUN apt update && \
     apt install -y oidc-agent && \  
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install sts-wire
-ADD https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 /usr/local/bin/sts-wire
-RUN chmod +x /usr/local/bin/sts-wire
+# # Install sts-wire
+# ADD https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 /usr/local/bin/sts-wire
+# RUN chmod +x /usr/local/bin/sts-wire
 
 COPY jupyterhub-singleuser /usr/local/bin/jupyterhub-singleuser
 COPY spawn.sh /jupyterlab-workspace/.init/spawn.sh
+
+# Copy Rclone files
+COPY aws-config /jupyterlab-workspace/.init/aws-config
+COPY cmd /jupyterlab-workspace/.init/cmd
+COPY config /jupyterlab-workspace/.init/config
+COPY init.sh /jupyterlab-workspace/.init/init.sh
+COPY sts.py /jupyterlab-workspace/.init/sts.py
+COPY sts.sh /jupyterlab-workspace/.init/sts.sh
+COPY token.sh /jupyterlab-workspace/.init/token.sh
 
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && \
     chmod +x /jupyterlab-workspace/.init/spawn.sh
