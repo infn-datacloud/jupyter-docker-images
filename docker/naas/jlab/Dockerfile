@@ -30,6 +30,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         nano \
         openssh-client \
         pandoc \
+        rclone \
         rsync \
         screen \
         snakemake \
