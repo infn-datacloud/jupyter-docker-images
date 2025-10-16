@@ -88,7 +88,6 @@ COPY spawn.sh /jupyterlab-workspace/.init/spawn.sh
 # Copy Rclone files
 COPY rclone-aws.config /jupyterlab-workspace/.init/rclone-aws.config
 COPY rclone-cmd.sh /jupyterlab-workspace/.init/rclone-cmd.sh
-COPY rclone-init.sh /jupyterlab-workspace/.init/rclone-init.sh
 COPY rclone-sts.py /jupyterlab-workspace/.init/rclone-sts.py
 COPY rclone-sts.sh /jupyterlab-workspace/.init/rclone-sts.sh
 COPY rclone-token.sh /jupyterlab-workspace/.init/rclone-token.sh
