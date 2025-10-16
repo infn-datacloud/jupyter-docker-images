@@ -12,21 +12,19 @@
 # --redirect-uri http://localhost:8843 \
 # --pw-cmd "echo \"DUMMY PWD\""
 
-kill `ps faux | grep "sts-wire ${USERNAME}" | awk '{ print $2 }'`
-kill `ps faux | grep ".${USERNAME}" | awk '{ print $2 }'`
-kill `ps faux | grep "sts-wire scratch" | awk '{ print $2 }'`
-kill `ps faux | grep ".scratch" | awk '{ print $2 }'`
+# kill `ps faux | grep "sts-wire ${USERNAME}" | awk '{ print $2 }'`
+kill `ps faux | grep rclone | grep ".${USERNAME}" | awk '{ print $2 }'`
+# kill `ps faux | grep "sts-wire scratch" | awk '{ print $2 }'`
+kill `ps faux | grep rclone | grep ".scratch" | awk '{ print $2 }'`
 
 mkdir -p /jupyterlab-workspace/s3/
-mkdir -p /jupyterlab-workspace/s3-rclone/
 mkdir -p /jupyterlab-workspace/local/
 mkdir -p /jupyterlab-workspace/s3/${USERNAME}
 mkdir -p /jupyterlab-workspace/s3/scratch
-mkdir -p /opt/user_data/cache/${USERNAME}
-mkdir -p /opt/user_data/cache/scratch
+# mkdir -p /opt/user_data/cache/${USERNAME}
+# mkdir -p /opt/user_data/cache/scratch
 
-cd /jupyterlab-workspace/.init/
-bash init.sh
+/jupyterlab-workspace/.init/rclone-cmd.sh
 
 # sleep 1 && nice -n 19 sts-wire https://iam.cloud.infn.it/ \
 # 	${USERNAME} https://rgw.cloud.infn.it/ IAMaccess object \

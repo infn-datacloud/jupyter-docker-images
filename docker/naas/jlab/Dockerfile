@@ -85,16 +85,17 @@ COPY jupyterhub-singleuser /usr/local/bin/jupyterhub-singleuser
 COPY spawn.sh /jupyterlab-workspace/.init/spawn.sh
 
 # Copy Rclone files
-COPY aws-config /jupyterlab-workspace/.init/aws-config
-COPY cmd /jupyterlab-workspace/.init/cmd
-COPY config /jupyterlab-workspace/.init/config
-COPY init.sh /jupyterlab-workspace/.init/init.sh
-COPY sts.py /jupyterlab-workspace/.init/sts.py
-COPY sts.sh /jupyterlab-workspace/.init/sts.sh
-COPY token.sh /jupyterlab-workspace/.init/token.sh
+COPY rclone-aws.config /jupyterlab-workspace/.init/rclone-aws.config
+COPY rclone-cmd.sh /jupyterlab-workspace/.init/rclone-cmd.sh
+COPY rclone-init.sh /jupyterlab-workspace/.init/rclone-init.sh
+COPY rclone-sts.py /jupyterlab-workspace/.init/rclone-sts.py
+COPY rclone-sts.sh /jupyterlab-workspace/.init/rclone-sts.sh
+COPY rclone-token.sh /jupyterlab-workspace/.init/rclone-token.sh
+COPY rclone.config /jupyterlab-workspace/.init/rclone.config
 
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && \
-    chmod +x /jupyterlab-workspace/.init/spawn.sh
+    chmod +x /jupyterlab-workspace/.init/*.sh && \
+    chmod +x /jupyterlab-workspace/.init/*.py 
 
 COPY bashrc /home/jovyan/.bashrc
 ENV PWD=/jupyterlab-workspace

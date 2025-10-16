@@ -3,9 +3,6 @@
 import boto3
 import json
 import os
-import datetime
-
-#boto3.set_stream_logger(name='botocore')
 
 def main():
     creds = {}
