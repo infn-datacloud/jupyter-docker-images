@@ -38,7 +38,7 @@ pipeline {
 
         // AI_INFN section
         AI_INFN_REPO_NAME =          'unpacked' 
-        AI_INFN_TAG_NAME =           'ai1.3-snakemake9.11'
+        AI_INFN_TAG_NAME =           'ai1.4'
         AI_INFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
         AI_INFN_JLAB_PATH =          'docker/ai_infn/jlab'
 
