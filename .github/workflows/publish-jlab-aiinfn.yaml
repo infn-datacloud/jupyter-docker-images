@@ -17,16 +17,13 @@ jobs:
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Pull base image
-        env:
-          DOCKER_CLIENT_TIMEOUT: 300
-          COMPOSE_HTTP_TIMEOUT: 302
-
-        run: docker pull harbor.cloud.infn.it/datacloud-templates/jlab-base:2.0.0
+        run: |
+          docker build -t harbor.cloud.infn.it/datacloud-templates/jlab-base:2.0.0 docker/singlenode/jlab-base
 
       - name: Build Docker image
         run: |
           IMAGE_NAME=ghcr.io/${{ github.repository }}/jlab-ai-infn:head
-          cd docker/ai_infn/jlab
+          cd 
           docker build -t $IMAGE_NAME .
 
       - name: Push Docker image
