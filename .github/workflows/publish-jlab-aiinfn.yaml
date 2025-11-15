@@ -17,6 +17,10 @@ jobs:
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Pull base image
+        env:
+          DOCKER_CLIENT_TIMEOUT: 300
+          COMPOSE_HTTP_TIMEOUT: 302
+
         run: docker pull harbor.cloud.infn.it/datacloud-templates/jlab-base:2.0.0
 
       - name: Build Docker image
