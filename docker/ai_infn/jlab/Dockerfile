@@ -58,3 +58,4 @@ RUN sed -i 's/:\/root:/:\/home\/private:/g' /etc/passwd
 # Import configuration of sshd
 COPY ./sshd.conf /etc/ssh/sshd_config.d/aiinfn.conf 
 
+WORKDIR /home
