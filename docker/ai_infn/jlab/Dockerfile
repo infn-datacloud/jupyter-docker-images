@@ -58,4 +58,8 @@ RUN sed -i 's/:\/root:/:\/home\/private:/g' /etc/passwd
 # Import configuration of sshd
 COPY ./sshd.conf /etc/ssh/sshd_config.d/aiinfn.conf 
 
+# Enable defining secondary groups through env var $NB_GROUPS
+COPY ./create_user_groups.py /usr/local/bin/before-notebook.d/05_create_user_groups.py
+RUN chmod a+rx /usr/local/bin/before-notebook.d/05_create_user_groups.py
+
 WORKDIR /home
