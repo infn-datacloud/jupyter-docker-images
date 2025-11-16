@@ -14,12 +14,20 @@ For example,
 
 import os
 import subprocess
+import traceback
 
+
+print (f"Processing NB_GROUPS={os.environ.get('NB_GROUPS', '')")
 groups = os.environ.get("NB_GROUPS", "").split(", ")
 username = os.environ.get("NB_USER", os.environ.get("JUPYTERHUB_USER", "jovyan"))
 
 for group in groups:
-    gid, groupname = group.split(":")
-    subprocess.run(["addgroup", "--gid", gid, groupname])
-    subprocess.run(["adduser", username, groupname])
+    try:
+        gid, groupname = group.split(":")
+        subprocess.run(["addgroup", "--gid", gid, groupname])
+        subprocess.run(["adduser", username, groupname])
+    except:
+        traceback.print_exc()
+        print ("Failed processing group: ", group)
+
 
