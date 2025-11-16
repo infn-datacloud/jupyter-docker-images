@@ -62,4 +62,7 @@ COPY ./sshd.conf /etc/ssh/sshd_config.d/aiinfn.conf
 COPY ./create_user_groups.py /usr/local/bin/before-notebook.d/05_create_user_groups.py
 RUN chmod a+rx /usr/local/bin/before-notebook.d/05_create_user_groups.py
 
+RUN echo "rm -rf /home/jovyan" > /usr/local/bin/before-notebook.d/101_cleanup_jovyan.py && \
+    chmod a+rx /usr/local/bin/before-notebook.d/99_cleanup_jovyan.py 
+
 WORKDIR /home
