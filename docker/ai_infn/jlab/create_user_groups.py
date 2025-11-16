@@ -17,7 +17,7 @@ import subprocess
 import traceback
 
 
-print (f"Processing NB_GROUPS={os.environ.get('NB_GROUPS', '')")
+print (f"Processing NB_GROUPS={os.environ.get('NB_GROUPS', '')}")
 groups = os.environ.get("NB_GROUPS", "").split(", ")
 username = os.environ.get("NB_USER", os.environ.get("JUPYTERHUB_USER", "jovyan"))
 
