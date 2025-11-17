@@ -1,0 +1,32 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build base Docker image
+        run: |
+          docker build -t harbor.cloud.infn.it/datacloud-templates/jlab-base:2.0.0 docker/singlenode/jlab-base
+
+      - name: Build custom Docker image
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/jlab-ai-infn:head
+          docker build -t $IMAGE_NAME docker/ai_infn/jlab/
+
+      - name: Push Docker image to GHCR
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/jlab-ai-infn:head
+          docker push $IMAGE_NAME
+
