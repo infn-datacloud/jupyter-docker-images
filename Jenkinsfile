@@ -21,15 +21,15 @@ def executeBuildAndCleanup(String imageName, String buildOptions) {
     }
 }
 
-def executeBuildAndCleanupWitCatch(String imageName, String buildOptions) {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-        try {
-            buildAndPushImage(imageName, buildOptions)
-        } finally {
-            sh "docker rmi ${imageName} || true"
-        }
-    }
-}
+// def executeBuildAndCleanupWitCatch(String imageName, String buildOptions) {
+//     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+//         try {
+//             buildAndPushImage(imageName, buildOptions)
+//         } finally {
+//             sh "docker rmi ${imageName} || true"
+//         }
+//     }
+// }
  
 pipeline {
     agent {
@@ -107,6 +107,17 @@ pipeline {
                         }
                     }
                 }
+                stage('Spark JHub') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JHUB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JHUB_PATH}/Dockerfile ${SPARK_JHUB_PATH}"
+                    }
+                    steps {
+                        script {
+                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
             }
         }
         stage('Parallel JLab images') {
@@ -130,6 +141,18 @@ pipeline {
                     steps {
                         script {
                             executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
+                stage('Spark JLab') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JLAB_PATH}/Dockerfile ${SPARK_JLAB_PATH}"
+                    }
+                    steps {
+                        script {
+                            sh "/usr/bin/docker system prune -fa"
+                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                         }
                     }
                 }
@@ -162,35 +185,7 @@ pipeline {
                     }
                 }
             }
-        }
-        stage('Parallel Spark images') {
-            parallel {
-                stage('Spark JLab') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JLAB_PATH}/Dockerfile ${SPARK_JLAB_PATH}"
-                    }
-                    steps {
-                        script {
-                            sh "/usr/bin/docker system prune -fa"
-                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
-                stage('Spark JHub') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JHUB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JHUB_PATH}/Dockerfile ${SPARK_JHUB_PATH}"
-                    }
-                    steps {
-                        script {
-                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
-            }
-        }
-        
+        } 
     }
     
     post {
