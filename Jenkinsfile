@@ -68,7 +68,61 @@ pipeline {
     }
 
     stages {
-        stage('Parallel Build System') {
+        stage('Parallel JLab images') {
+            parallel {
+                stage('Base JLab') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SN_JLAB_BASE_PATH}/Dockerfile ${SN_JLAB_BASE_PATH}"
+                    }
+                    steps {
+                        script {
+                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
+                stage('Naas JLab') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JLAB_PATH}/Dockerfile ${NAAS_JLAB_PATH}"
+                    }
+                    steps {
+                        script {
+                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Child JLab images') {
+            parallel {
+                stage('Standalone JLab') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${SN_JLAB_STANDALONE_PATH}/Dockerfile ${SN_JLAB_STANDALONE_PATH}"
+                    }
+                    steps {
+                        script {
+                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
+                stage('AI_INFN JLab') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
+                        BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
+                    }
+                    steps {
+                        script {
+                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel JHub images') {
             parallel {
                 // Lane 1
                 stage('JHub SingleNode') {
@@ -82,76 +136,14 @@ pipeline {
                         }
                     }
                 }
-
-                // Lane 2
-                stage('Naas Stack') {
-                    parallel {
-                        stage('Naas JLab') {
-                            environment {
-                                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                                DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JLAB_PATH}/Dockerfile ${NAAS_JLAB_PATH}"
-                            }
-                            steps {
-                                script {
-                                    executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                                }
-                            }
-                        }
-                        stage('Naas JHub') {
-                            environment {
-                                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
-                                DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
-                            }
-                            steps {
-                                script {
-                                    executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                                }
-                            }
-                        }
+                stage('Naas JHub') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
                     }
-                }
-
-                // Lane 3
-                stage('JLab Dependency Chain') {
-                    stages {
-                        stage('Build Base JLab') {
-                            environment {
-                                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                                DOCKER_BUILD_OPTIONS = "--no-cache -f ${SN_JLAB_BASE_PATH}/Dockerfile ${SN_JLAB_BASE_PATH}"
-                            }
-                            steps {
-                                script {
-                                    executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                                }
-                            }
-                        }
-                        stage('Build JLab Children') {
-                            parallel {
-                                stage('Standalone JLab') {
-                                    environment {
-                                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                                        BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${SN_JLAB_STANDALONE_PATH}/Dockerfile ${SN_JLAB_STANDALONE_PATH}"
-                                    }
-                                    steps {
-                                        script {
-                                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                                        }
-                                    }
-                                }
-                                stage('AI_INFN JLab') {
-                                    environment {
-                                        IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
-                                        BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
-                                    }
-                                    steps {
-                                        script {
-                                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                                        }
-                                    }
-                                }
-                            }
+                    steps {
+                        script {
+                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                         }
                     }
                 }
