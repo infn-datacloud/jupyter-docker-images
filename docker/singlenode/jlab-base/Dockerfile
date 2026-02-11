@@ -62,7 +62,8 @@ RUN python3 -m pip install --no-cache-dir \
         tornado 
 
 # Install vscode
-RUN curl -fsSL https://code-server.dev/install.sh | sh
+# Old: https://code-server.dev/install.sh
+RUN curl -fsSL https://raw.githubusercontent.com/cdr/code-server/main/install.sh | sh
 RUN python3 -m pip install \ 
         git+https://github.com/infn-datacloud/jupyter_codeserver_proxy.git \
         jupyter-resource-usage \
