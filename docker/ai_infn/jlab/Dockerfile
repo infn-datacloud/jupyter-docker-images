@@ -4,9 +4,9 @@ FROM ${BASE_IMAGE}
 
 # RUN splitted to Install apptainer, cvmfs and openssh-server
 # Install apptainer, cvmfs and openssh-server
-RUN apt update && \
-    apt install -y gnupg2 && \
-    apt install -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt install -y gnupg2 && \
+    DEBIAN_FRONTEND=noninteractive apt install -y \
         lsb-release \
         software-properties-common \
         wget && \
