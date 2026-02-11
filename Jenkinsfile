@@ -84,7 +84,7 @@ pipeline {
     stages {
         stage('Parallel JHub images') {
             parallel {
-                failFast false
+                // failFast false
                 stage('SingleNode JHub') {
                     environment {
                         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
@@ -103,7 +103,7 @@ pipeline {
                     }
                     steps {
                         script {
-                            executeBuildAndCleanupWitCatch(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                         }
                     }
                 }
