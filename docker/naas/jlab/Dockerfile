@@ -1,6 +1,6 @@
-# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-naas:2.0.0
+# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-naas:2.1.0
 
-ARG BASE_IMAGE="jupyterhub/k8s-singleuser-sample:4.1.0"
+ARG BASE_IMAGE="jupyterhub/k8s-singleuser-sample:4.3.0"
 FROM ${BASE_IMAGE}
 
 USER root
@@ -30,6 +30,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         nano \
         openssh-client \
         pandoc \
+        rclone \
         rsync \
         screen \
         snakemake \
@@ -51,6 +52,7 @@ RUN python3 -m pip install \
 
 # Install Jupyterlab componentes
 RUN python3 -m pip install --no-cache-dir \
+    boto3==1.35.99 \
     dask-labextension \
     h5py \
     ipywidgets  \
@@ -76,15 +78,24 @@ RUN apt update && \
     apt install -y oidc-agent && \  
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install sts-wire
-ADD https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 /usr/local/bin/sts-wire
-RUN chmod +x /usr/local/bin/sts-wire
+# # Install sts-wire
+# ADD https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 /usr/local/bin/sts-wire
+# RUN chmod +x /usr/local/bin/sts-wire
 
 COPY jupyterhub-singleuser /usr/local/bin/jupyterhub-singleuser
 COPY spawn.sh /jupyterlab-workspace/.init/spawn.sh
 
+# Copy Rclone files
+COPY rclone-aws.config /jupyterlab-workspace/.init/rclone-aws.config
+COPY rclone-cmd.sh /jupyterlab-workspace/.init/rclone-cmd.sh
+COPY rclone-sts.py /jupyterlab-workspace/.init/rclone-sts.py
+COPY rclone-sts.sh /jupyterlab-workspace/.init/rclone-sts.sh
+COPY rclone-token.sh /jupyterlab-workspace/.init/rclone-token.sh
+COPY rclone.config /jupyterlab-workspace/.init/rclone.config
+
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && \
-    chmod +x /jupyterlab-workspace/.init/spawn.sh
+    chmod +x /jupyterlab-workspace/.init/*.sh && \
+    chmod +x /jupyterlab-workspace/.init/*.py 
 
 COPY bashrc /home/jovyan/.bashrc
 ENV PWD=/jupyterlab-workspace
