@@ -20,6 +20,16 @@ def executeBuildAndCleanup(String imageName, String buildOptions) {
         sh "docker rmi ${imageName} || true"
     }
 }
+
+def executeBuildAndCleanupWitCatch(String imageName, String buildOptions) {
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+        try {
+            buildAndPushImage(imageName, buildOptions)
+        } finally {
+            sh "docker rmi ${imageName} || true"
+        }
+    }
+}
  
 pipeline {
     agent {
@@ -67,7 +77,38 @@ pipeline {
         // SANITIZED_BRANCH_NAME = env.BRANCH_NAME.replace('/', '_')
     }
 
+    triggers {
+        cron('H H/1 * * *') 
+    }
+
     stages {
+        stage('Parallel JHub images') {
+            parallel {
+                failFast false
+                stage('SingleNode JHub') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        DOCKER_BUILD_OPTIONS = "-f ${SN_JHUB_PATH}/Dockerfile ${SN_JHUB_PATH}"
+                    }
+                    steps {
+                        script {
+                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
+                stage('Naas JHub') {
+                    environment {
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
+                    }
+                    steps {
+                        script {
+                            executeBuildAndCleanupWitCatch(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                        }
+                    }
+                }
+            }
+        }
         stage('Parallel JLab images') {
             parallel {
                 stage('Base JLab') {
@@ -122,33 +163,34 @@ pipeline {
                 }
             }
         }
-        stage('Parallel JHub images') {
+        stage('Parallel Spark images') {
             parallel {
-                // Lane 1
-                stage('SingleNode JHub') {
+                stage('Spark JLab') {
                     environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "-f ${SN_JHUB_PATH}/Dockerfile ${SN_JHUB_PATH}"
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JLAB_PATH}/Dockerfile ${SPARK_JLAB_PATH}"
                     }
                     steps {
                         script {
-                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                            sh "/usr/bin/docker system prune -fa"
+                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                         }
                     }
                 }
-                stage('Naas JHub') {
+                stage('Spark JHub') {
                     environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JHUB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JHUB_PATH}/Dockerfile ${SPARK_JHUB_PATH}"
                     }
                     steps {
                         script {
-                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
                         }
                     }
                 }
             }
         }
+        
     }
     
     post {
