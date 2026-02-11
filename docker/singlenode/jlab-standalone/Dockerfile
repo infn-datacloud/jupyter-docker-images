@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install oidc-agent
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends oidc-agent \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends oidc-agent && \
     apt-get clean && rm -rf /var/lib/apt/lists/* 
 
 # Install sts-wire

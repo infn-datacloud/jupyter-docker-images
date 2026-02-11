@@ -125,7 +125,7 @@ pipeline {
         stage('Parallel JHub images') {
             parallel {
                 // Lane 1
-                stage('JHub SingleNode') {
+                stage('SingleNode JHub') {
                     environment {
                         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
                         DOCKER_BUILD_OPTIONS = "-f ${SN_JHUB_PATH}/Dockerfile ${SN_JHUB_PATH}"
