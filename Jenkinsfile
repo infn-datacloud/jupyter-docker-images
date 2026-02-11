@@ -61,59 +61,59 @@ pipeline {
     }
     
     stages {
-        // stage('Build and Push SingleNode JupyterHub Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f ${SN_JHUB_PATH}/Dockerfile ${SN_JHUB_PATH}"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push SingleNode JupyterHub Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f ${SN_JHUB_PATH}/Dockerfile ${SN_JHUB_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
         
-        // stage('Build and Push Base JupyterLab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--no-cache -f ${SN_JLAB_BASE_PATH}/Dockerfile ${SN_JLAB_BASE_PATH}"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push Base JupyterLab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--no-cache -f ${SN_JLAB_BASE_PATH}/Dockerfile ${SN_JLAB_BASE_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
-        // stage('Build and Push Standalone JupyterLab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-        //         BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${SN_JLAB_STANDALONE_PATH}/Dockerfile ${SN_JLAB_STANDALONE_PATH}"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push Standalone JupyterLab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${SN_JLAB_STANDALONE_PATH}/Dockerfile ${SN_JLAB_STANDALONE_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
-        // stage('Build and Push AI_INFN JupyterLab Image') {
-        //     environment {
-        //         IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
-        //         BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-        //         DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
-        //     }
-        //     steps {
-        //         script {
-        //             sh "/usr/bin/docker system prune -fa"
-        //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-        //         }
-        //     }
-        // }
+        stage('Build and Push AI_INFN JupyterLab Image') {
+            environment {
+                IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
+                BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+                DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
+            }
+            steps {
+                script {
+                    sh "/usr/bin/docker system prune -fa"
+                    buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                }
+            }
+        }
 
         // stage('Build and Push Spark JupyterHub Image') {
         //     environment {
