@@ -58,8 +58,11 @@ RUN sed -i 's/:\/root:/:\/home\/private:/g' /etc/passwd
 # Import configuration of sshd
 COPY ./sshd.conf /etc/ssh/sshd_config.d/aiinfn.conf 
 
-# Clean home of default jupyter user
-RUN rm -rf /home/jovyan
+# Enable defining secondary groups through env var $NB_GROUPS
+COPY ./create_user_groups.py /usr/local/bin/before-notebook.d/05_create_user_groups.py
+RUN chmod a+rx /usr/local/bin/before-notebook.d/05_create_user_groups.py
+
+RUN echo "rm -rf /home/jovyan" >  /usr/local/bin/before-notebook.d/99_cleanup_jovyan.sh 
+RUN chmod a+rx                    /usr/local/bin/before-notebook.d/99_cleanup_jovyan.sh 
 
 WORKDIR /home
-ENTRYPOINT []
