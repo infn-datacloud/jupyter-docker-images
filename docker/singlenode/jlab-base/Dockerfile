@@ -36,7 +36,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         tini \
         vim \
         wget && \
-        apt upgrade -y --no-install-recommends && \
         apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Jupyterlab componentes

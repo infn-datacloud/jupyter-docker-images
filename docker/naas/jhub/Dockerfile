@@ -4,8 +4,9 @@ FROM jupyterhub/k8s-hub:4.3.0
 
 USER root
 
-RUN apt-get update && \
-    apt-get -y install \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install \
         vim \
         sudo \
         git \
