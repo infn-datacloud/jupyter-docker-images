@@ -1,4 +1,4 @@
-# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-base:2.0.0
+# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-base:2.1.1
 
 ARG BASE_IMAGE="quay.io/jupyter/minimal-notebook:ubuntu-22.04" 
 FROM ${BASE_IMAGE}
@@ -36,6 +36,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         tini \
         vim \
         wget && \
+        apt upgrade -y --no-install-recommends && \
         apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Jupyterlab componentes

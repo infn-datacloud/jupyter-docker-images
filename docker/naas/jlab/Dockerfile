@@ -1,4 +1,4 @@
-# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-naas:2.1.0
+# Image name: harbor.cloud.infn.it/datacloud-templates/jlab-naas:2.1.1
 
 ARG BASE_IMAGE="jupyterhub/k8s-singleuser-sample:4.3.0"
 FROM ${BASE_IMAGE}
@@ -41,6 +41,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
         tini \
         vim \
         wget && \
+        apt upgrade -y --no-install-recommends && \
         apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install vscode
@@ -75,7 +76,7 @@ RUN python3 -m pip install --no-cache-dir \
 
 # Install oidc-agent
 RUN apt update && \
-    apt install -y oidc-agent && \  
+    apt install -y oidc-agent && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # # Install sts-wire

@@ -1,4 +1,4 @@
-# Image name: harbor.cloud.infn.it/datacloud-templates/jhub-naas:2.1.0
+# Image name: harbor.cloud.infn.it/datacloud-templates/jhub-naas:2.1.1
 
 FROM jupyterhub/k8s-hub:4.3.0
 
