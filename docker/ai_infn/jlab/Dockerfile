@@ -19,7 +19,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 #      cvmfs \
 #      cvmfs-fuse3 \
       cvmfs-libs \
-      libgl1-mesa-glx \    
+      # libgl1-mesa-glx \    obsoleto per ubuntu > 23
+      libgl1 \ 
+      libglx-mesa0 \
       openssh-server \
       xvfb \
       # Remote desktop:
