@@ -1,4 +1,4 @@
-# Image name: harbor.cloud.infn.it/datacloud-jupyter/jhub-singlenode:2.1.1
+# Image name: harbor.cloud.infn.it/datacloud-jupyter/jhub-singlenode:2.1.2
 
 FROM jupyterhub/jupyterhub:5.4.3
 
