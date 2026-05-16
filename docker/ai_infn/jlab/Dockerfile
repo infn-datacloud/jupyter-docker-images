@@ -37,6 +37,7 @@ RUN conda update -n base -c conda-forge conda && \
 # Install snakemake Python modules
 RUN python3 -m pip install --no-cache-dir \
       jupyter-remote-desktop-proxy \
+      jupyter-ai langchain-ollama \
       snakemake-executor-plugin-cluster-generic>=1 \
       snakemake-storage-plugin-s3 \
       git+https://github.com/landerlini/snakemake-storage-plugin-webdav \
