@@ -1,0 +1,18 @@
+- title: Guides
+  description: Una raccolta di guide e tutorial per l'uso del JupyterHub e dei suoi servizi associati.
+  source: https://guides.cloud.infn.it/
+  type: url
+  catalog: DataCloud
+  icon: /opt/conda/share/infn.svg
+  args:
+    createNewWindow: true
+
+- title: Resource Monitoring
+  description: Grafana dashboard per monitorare risorse e performance del nodo JupyterHub.
+  source: https://212.189.205.66.cloud.ba.infn.it/grafana/d/vm-overview/jupyterhub-vm-e28094-overview?orgId=1&from=now-24h&to=now&timezone=browser&refresh=30s
+  type: url
+  catalog: DataCloud
+  icon: /opt/conda/share/grafana.svg
+  args:
+    createNewWindow: true
+

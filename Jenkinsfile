@@ -43,7 +43,7 @@ pipeline {
         REPO_NAME =                  'datacloud-jupyter'
         
         // General section
-        TAG_NAME =                   '2.1.1'
+        TAG_NAME =                   '2.3.0'
 
         // Singlenode section
         JHUB_IMAGE_NAME =            'jhub-singlenode'
@@ -78,7 +78,7 @@ pipeline {
     }
 
     triggers {
-        cron('H H/1 * * *') 
+        cron('H H * * H') 
     }
 
     stages {
@@ -96,28 +96,28 @@ pipeline {
                         }
                     }
                 }
-                stage('Naas JHub') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
-                    }
-                    steps {
-                        script {
-                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
-                stage('Spark JHub') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JHUB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JHUB_PATH}/Dockerfile ${SPARK_JHUB_PATH}"
-                    }
-                    steps {
-                        script {
-                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
+                // stage('Naas JHub') {
+                //     environment {
+                //         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
+                //         DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JHUB_PATH}/Dockerfile ${NAAS_JHUB_PATH}"
+                //     }
+                //     steps {
+                //         script {
+                //             executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                //         }
+                //     }
+                // }
+                // stage('Spark JHub') {
+                //     environment {
+                //         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JHUB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
+                //         DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JHUB_PATH}/Dockerfile ${SPARK_JHUB_PATH}"
+                //     }
+                //     steps {
+                //         script {
+                //             buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+                //         }
+                //     }
+                // }
                 stage('Base JLab') {
                     environment {
                         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
@@ -131,57 +131,57 @@ pipeline {
                 }
             }
         }
-        stage('Parallel Advanced JLab images') {
-            parallel {
-                stage('Standalone JLab') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${SN_JLAB_STANDALONE_PATH}/Dockerfile ${SN_JLAB_STANDALONE_PATH}"
-                    }
-                    steps {
-                        script {
-                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
-                stage('AI_INFN JLab') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
-                        BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
-                    }
-                    steps {
-                        script {
-                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
-                stage('Naas JLab') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JLAB_PATH}/Dockerfile ${NAAS_JLAB_PATH}"
-                    }
-                    steps {
-                        script {
-                            executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
-                stage('Spark JLab') {
-                    environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JLAB_PATH}/Dockerfile ${SPARK_JLAB_PATH}"
-                    }
-                    steps {
-                        script {
-                            sh "/usr/bin/docker system prune -fa"
-                            buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
-                        }
-                    }
-                }
-            }
-        } 
+        // stage('Parallel Advanced JLab images') {
+        //     parallel {
+        //         stage('Standalone JLab') {
+        //             environment {
+        //                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${STANDALONE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+        //                 BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+        //                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${SN_JLAB_STANDALONE_PATH}/Dockerfile ${SN_JLAB_STANDALONE_PATH}"
+        //             }
+        //             steps {
+        //                 script {
+        //                     executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //                 }
+        //             }
+        //         }
+        //         stage('AI_INFN JLab') {
+        //             environment {
+        //                 IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
+        //                 BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+        //                 DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
+        //             }
+        //             steps {
+        //                 script {
+        //                     executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //                 }
+        //             }
+        //         }
+        //         stage('Naas JLab') {
+        //             environment {
+        //                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${NAAS_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
+        //                 DOCKER_BUILD_OPTIONS = "--no-cache -f ${NAAS_JLAB_PATH}/Dockerfile ${NAAS_JLAB_PATH}"
+        //             }
+        //             steps {
+        //                 script {
+        //                     executeBuildAndCleanup(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //                 }
+        //             }
+        //         }
+        //         stage('Spark JLab') {
+        //             environment {
+        //                 IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${SPARK_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${SPARK_TAG_NAME}"
+        //                 DOCKER_BUILD_OPTIONS = "--no-cache -f ${SPARK_JLAB_PATH}/Dockerfile ${SPARK_JLAB_PATH}"
+        //             }
+        //             steps {
+        //                 script {
+        //                     sh "/usr/bin/docker system prune -fa"
+        //                     buildAndPushImage(IMAGE_NAME, DOCKER_BUILD_OPTIONS)
+        //                 }
+        //             }
+        //         }
+        //     }
+        // } 
     }
     
     post {

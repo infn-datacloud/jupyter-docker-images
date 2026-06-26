@@ -1,467 +1,380 @@
-# Configuration file for JupyterHub
+# =============================================================================
+# jupyterhub_config.py  —  single-node JupyterHub 
+#
+# Features:
+#   - secrets read via *_FILE convention (Docker secrets in /run/secrets)
+#   - IAM authentication (GenericOAuthenticator) with group authorization
+#   - group extraction from "groups" claim; optional WLCG compat (wlcg.groups)
+#   - DockerSpawner: per-user container, started as root (NB_*), image + RAM selection form
+#   - mounts: shared (ro) + shared/{username} (rw) + users/{username}->/private (rw)
+#   - idle-culler always active
+#   - optional CVMFS (privileged + bind /cvmfs only if WITH_CVMFS=true)
+#   - optional GPU support
+# =============================================================================
 import os
-import pprint
-import socket
-import sys
-import warnings
-import jwt
 
 import dockerspawner
 from oauthenticator.generic import GenericOAuthenticator
-from tornado import gen
+
+# -----------------------------------------------------------------------------
+# 0) Secrets importing: if _FILE exists, populate from its content.
+# -----------------------------------------------------------------------------
+def _hydrate_from_file(name):
+    p = os.environ.get(name + "_FILE")
+    if p and os.path.exists(p):
+        with open(p) as fh:
+            os.environ[name] = fh.read().strip()
+
+
+for _s in (
+    "IAM_CLIENT_SECRET",
+    "JUPYTERHUB_CRYPT_KEY",
+    "JUPYTERHUB_API_TOKEN",
+    "JUPYTER_PROXY_TOKEN",
+):
+    _hydrate_from_file(_s)
 
 c = get_config()  # noqa: F821
+
+# -----------------------------------------------------------------------------
+# 1) Service Environment Variables
+# -----------------------------------------------------------------------------
+IAM_URL = os.environ.get("OAUTH_ENDPOINT", "https://iam.cloud.infn.it/").rstrip("/") + "/"
+OAUTH_CALLBACK_URL = os.environ["OAUTH_CALLBACK_URL"]
+IAM_CLIENT_ID = os.environ["IAM_CLIENT_ID"]
+IAM_CLIENT_SECRET = os.environ["IAM_CLIENT_SECRET"]
+
+OAUTH_GROUPS = [g.strip() for g in os.environ.get("OAUTH_GROUPS", "").replace(",", " ").split() if g.strip()]
+ADMIN_OAUTH_GROUPS = [g.strip() for g in os.environ.get("ADMIN_OAUTH_GROUPS", "").replace(",", " ").split() if g.strip()]
+OAUTH_SUB = os.environ.get("OAUTH_SUB", "")
+
+DNS_NAME = os.environ.get("DNS_NAME", "")
+JUPYTER_IMAGE_LIST = [i.strip() for i in os.environ.get("JUPYTER_IMAGE_LIST", "").split(",") if i.strip()]
+JUPYTER_RAM_LIST = [r.strip() for r in os.environ.get("JUPYTER_RAM_LIST", "1G,2G,4G").split(",") if r.strip()]
+JUPYTER_CPU_LIST = [c_.strip() for c_ in os.environ.get("JUPYTER_CPU_LIST", "1,2,4").split(",") if c_.strip()]
+WITH_GPU = os.environ.get("WITH_GPU", "false").lower() in ("1", "true", "yes", "y", "t")
+WITH_CVMFS = os.environ.get("JUPYTER_WITH_CVMFS", "False").lower() in ("1", "true", "yes", "y", "t")
+# Compat WLCG: Extract groups from the wlcg.groups claim (JWT) instead of "groups".
+# Disabled by default: enable only if your IAM does not populate "groups" in the userinfo.
+WLCG_GROUPS_COMPAT = os.environ.get("WLCG_GROUPS_COMPAT", "false").lower() in ("1", "true", "yes", "y", "t")
+POST_START_CMD = os.environ.get("JUPYTER_POST_START_CMD", "")
+DOCKER_NETWORK_NAME = os.environ.get("DOCKER_NETWORK_NAME", "jupyterhub")
+IDLE_CULLER_TIMEOUT = os.environ.get("IDLE_CULLER_TIMEOUT", "3600")
+
+NOTEBOOK_DIR = os.environ.get("DOCKER_NOTEBOOK_DIR") or "/jupyterlab-workspace"
+NOTEBOOK_MOUNT_DIR = (os.environ.get("DOCKER_NOTEBOOK_MOUNT_DIR", "").rstrip("/") + "/jupyter-mounts").lstrip("/")
+NOTEBOOK_MOUNT_DIR = "/" + NOTEBOOK_MOUNT_DIR
+WITH_S3FUSE = os.environ.get("WITH_S3FUSE", "true").lower() in ("1", "true", "yes", "y", "t")
+
+DEFAULT_JLAB_IMAGE = "harbor.cloud.infn.it/datacloud-templates/jlab-base:latest"
+
+
+# -----------------------------------------------------------------------------
+# 2) JupyterHub core
+# -----------------------------------------------------------------------------
+c.JupyterHub.hub_ip = "0.0.0.0"
+c.JupyterHub.hub_connect_ip = "jupyterhub"   # nome del servizio sulla rete docker
+c.JupyterHub.bind_url = "http://0.0.0.0:8088"
+c.JupyterHub.hub_bind_url = "http://:8088"
+c.JupyterHub.admin_access = True
+c.JupyterHub.log_level = 30
 
 c.JupyterHub.tornado_settings = {
     "max_body_size": 1048576000,
     "max_buffer_size": 1048576000,
 }
 
-callback = os.environ["OAUTH_CALLBACK_URL"]
-os.environ["OAUTH_CALLBACK"] = callback
-iam_server = os.environ["OAUTH_ENDPOINT"]
-
-server_host = socket.gethostbyname(socket.getfqdn())
-os.environ["IAM_INSTANCE"] = iam_server
-
-#c.Spawner.default_url = '/lab'
-
-class EnvAuthenticator(GenericOAuthenticator):
-    @gen.coroutine
-    def pre_spawn_start(self, user, spawner):
-        auth_state = yield user.get_auth_state()
-        
-        # Spiga - Patch to implement WLCG - IAM prifiles compatibility
-     
-        if "wlcg.groups" in auth_state["scope"]:
-            groups = jwt.decode(auth_state["access_token"], options={"verify_signature": False})
-            auth_state["oauth_user"]["groups"] =  [ s[1:]  for s in groups["wlcg.groups"] ]
-        # Spiga
-
-        pprint.pprint(auth_state)
-        if not auth_state:
-            # user has no auth state
-            return
-        # define some environment variables from auth_state
-        self.log.info(auth_state)
-        spawner.environment["IAM_SERVER"] = iam_server
-        spawner.environment["IAM_CLIENT_ID"] =  os.environ["IAM_CLIENT_ID"]
-        spawner.environment["IAM_CLIENT_SECRET"] =  os.environ["IAM_CLIENT_SECRET"]
-        spawner.environment["ACCESS_TOKEN"] = auth_state["access_token"]
-        spawner.environment["REFRESH_TOKEN"] = auth_state["refresh_token"]
-        spawner.environment["USERNAME"] = auth_state["oauth_user"]["preferred_username"]
-        spawner.environment["JUPYTERHUB_ACTIVITY_INTERVAL"] = "15"
-
-        amIAllowed = False
-        allowed_groups_user = ""
-        allowed_groups_admin = ""
-        matched_groups_user = False
-        matched_groups_admin = False
-
-        self.log.info(auth_state["oauth_user"])
-        
-        if auth_state["oauth_user"]["sub"] == os.environ["OAUTH_SUB"]:
-            amIAllowed = True
-
-        if os.environ.get("OAUTH_GROUPS"):
-            spawner.environment["GROUPS"] = " ".join(auth_state["oauth_user"]["groups"])
-            allowed_groups_user = os.environ["OAUTH_GROUPS"].split(" ")
-
-            self.log.info("Allowed groups user")
-            self.log.info(auth_state["oauth_user"]["groups"])
-            self.log.info(allowed_groups_user)
-
-            matched_groups_user = set(allowed_groups_user).intersection(set(auth_state["oauth_user"]["groups"])) 
-                
-        if os.environ["ADMIN_OAUTH_GROUPS"] :
-            allowed_groups_admin = os.environ["ADMIN_OAUTH_GROUPS"].split(" ")            
-            matched_groups_admin = set(allowed_groups_admin).intersection(set(auth_state["oauth_user"]["groups"])) 
-            
-            self.log.info("Allowed groups user")
-            self.log.info(allowed_groups_admin)
-            
-        if matched_groups_user or matched_groups_admin : amIAllowed = True
-                
-        if not amIAllowed:
-            err_msg = "Authorization Failed: User is not the owner of the service"
-            if allowed_groups_user or allowed_groups_admin :
-                err_msg =  err_msg + " nor belonging to the allowed groups %s %s" % (allowed_groups_user,allowed_groups_admin)
-            self.log.error( err_msg )
-
-            raise Exception( err_msg )
-
-    # https://github.com/jupyterhub/oauthenticator/blob/master/oauthenticator/generic.py#L157
-    async def authenticate(self, handler, data=None):
-        code = handler.get_argument("code")
-
-        params = dict(
-            redirect_uri=self.get_callback_url(handler),
-            code=code,
-            grant_type="authorization_code",
-        )
-        params.update(self.extra_params)
-        headers = self._get_headers()
-        token_resp_json = await self._get_token(headers, params)
-        user_data_resp_json = await self._get_user_data(token_resp_json)
-
-        if callable(self.username_key):
-            name = self.username_key(user_data_resp_json)
-        else:
-            name = user_data_resp_json.get(self.username_key)
-            if not name:
-                self.log.error(
-                    "OAuth user contains no key %s: %s",
-                    self.username_key,
-                    user_data_resp_json,
-                )
-                return
-
-        auth_state = self._create_auth_state(token_resp_json, user_data_resp_json)
-       
-        # Spiga - Patch to implement WLCG - IAM prifiles compatibility
-        if "wlcg.groups" in auth_state["scope"]:
-            groups = jwt.decode(auth_state["access_token"], options={"verify_signature": False})
-            auth_state["oauth_user"]["groups"] =  [ s[1:]  for s in groups["wlcg.groups"] ]
-        # Spiga
-
-        self.log.info(auth_state)
- 
-        is_admin = False
-        matched_admin_groups = False 
-        if os.environ["ADMIN_OAUTH_GROUPS"] :
-            allowed_admin_groups = os.environ["ADMIN_OAUTH_GROUPS"].split(" ")            
-            matched_admin_groups = set(allowed_admin_groups).intersection(set(auth_state["oauth_user"]["groups"])) 
-
-        if os.environ.get("OAUTH_SUB") == auth_state["oauth_user"]["sub"]  or matched_admin_groups:
-            self.log.info(
-                "%s : is admin",
-                ( name ),
-            )
-            is_admin = True
-        else:
-            self.log.info(" %s is not in admin of the service ", name)
-
-        return {
-            "name": name,
-            "admin": is_admin,
-            "auth_state": auth_state,  # self._create_auth_state(token_resp_json, user_data_resp_json)
-        }
-
-c.JupyterHub.authenticator_class = EnvAuthenticator
-c.GenericOAuthenticator.oauth_callback_url = callback
-
-c.JupyterHub.db_url = "sqlite:///db/jupyterhub.sqlite"
-
-# PUT IN SECRET
-c.GenericOAuthenticator.client_id = os.environ["IAM_CLIENT_ID"]
-c.GenericOAuthenticator.client_secret = os.environ["IAM_CLIENT_SECRET"]
-c.GenericOAuthenticator.authorize_url = iam_server.strip("/") + "/authorize"
-c.GenericOAuthenticator.token_url = iam_server.strip("/") + "/token"
-c.GenericOAuthenticator.userdata_url = iam_server.strip("/") + "/userinfo"
-c.GenericOAuthenticator.scope = [
-    "openid",
-    "profile",
-    "email",
-    "address",
-    "offline_access",
-    "wlcg", 
-    "wlcg.groups",
-    ]
-c.GenericOAuthenticator.username_key = "preferred_username"
-
-c.GenericOAuthenticator.enable_auth_state = True
-if "JUPYTERHUB_CRYPT_KEY" not in os.environ:
-    warnings.warn(
-        "Need JUPYTERHUB_CRYPT_KEY env for persistent auth_state.\n"
-        "    export JUPYTERHUB_CRYPT_KEY=$(openssl rand -hex 32)"
-    )
-    c.CryptKeeper.keys = [os.urandom(32)]
-
-c.JupyterHub.log_level = 30
-c.JupyterHub.cookie_secret_file = "./cookies/jupyterhub_cookie_secret"
-
-c.ConfigurableHTTPProxy.debug = True
+# TLS/ingress routing is handled by the external configurable-http-proxy (:8888)
 c.JupyterHub.cleanup_servers = False
 c.ConfigurableHTTPProxy.should_start = False
-c.ConfigurableHTTPProxy.auth_token = os.environ.get("JUPYTER_PROXY_TOKEN", "test_token")
+c.ConfigurableHTTPProxy.auth_token = os.environ.get("JUPYTER_PROXY_TOKEN", "")
 c.ConfigurableHTTPProxy.api_url = "http://http_proxy:8001"
 
+# Persistent DB and cookie secret
+c.JupyterHub.db_url = "sqlite:////srv/jupyterhub/db/jupyterhub.sqlite"
+c.JupyterHub.cookie_secret_file = "/srv/jupyterhub/cookies/jupyterhub_cookie_secret"
+
+# -----------------------------------------------------------------------------
+# 3) IAM Authentication (GenericOAuthenticator)
+#    By default, groups are received from the "groups" claim (claim_groups_key).
+#    The WLCG compatibility is optional and can be enabled with 
+#    WLCG_GROUPS_COMPAT=true. In that case we use modify_auth_state_hook to 
+#    normalize the groups in auth_state, without overwriting authenticate() 
+#    (which changes across oauthenticator versions).
+# -----------------------------------------------------------------------------
+SCOPES = ["openid", "profile", "email", "offline_access"]
+if WLCG_GROUPS_COMPAT:
+    SCOPES += ["wlcg", "wlcg.groups"]
+
+def _modify_auth_state_hook(authenticator, auth_state):
+    """ Normalize WLCG groups from the JWT access token in the 'groups' claim.
+    Executed only if WLCG_GROUPS_COMPAT=true. Decodes the access token without
+    verifying the signature (IAM already verified it at issuance) and copies
+    wlcg.groups -> oauth_user["groups"], stripping the leading "/".
+    """
+    try:
+        import jwt
+        token = auth_state.get("access_token")
+        decoded = jwt.decode(token, options={"verify_signature": False})
+        wlcg = decoded.get("wlcg.groups")
+        if wlcg:
+            normalized = [g[1:] if g.startswith("/") else g for g in wlcg]
+            user_info = auth_state.setdefault(
+                authenticator.user_auth_state_key, {}
+            )
+            user_info["groups"] = normalized
+    except Exception as e:  # prevent to block the login for a failed parsing
+        authenticator.log.warning("WLCG groups compat hook failed: %s", e)
+    return auth_state
+
+c.JupyterHub.authenticator_class = "generic-oauth"
+
+c.GenericOAuthenticator.client_id = IAM_CLIENT_ID
+c.GenericOAuthenticator.client_secret = IAM_CLIENT_SECRET
+c.GenericOAuthenticator.oauth_callback_url = OAUTH_CALLBACK_URL
+c.GenericOAuthenticator.authorize_url = IAM_URL + "authorize"
+c.GenericOAuthenticator.token_url = IAM_URL + "token"
+c.GenericOAuthenticator.userdata_url = IAM_URL + "userinfo"
+c.GenericOAuthenticator.scope = SCOPES
+c.GenericOAuthenticator.username_claim = "preferred_username"
+c.GenericOAuthenticator.claim_groups_key = "groups"
+c.GenericOAuthenticator.allowed_groups = set(OAUTH_GROUPS)
+c.GenericOAuthenticator.admin_groups = set(ADMIN_OAUTH_GROUPS)
+c.GenericOAuthenticator.manage_groups = True
+c.GenericOAuthenticator.enable_auth_state = True
+# Only allow users who are in the allowed_groups: authorization is handled by allowed_groups
+c.GenericOAuthenticator.allow_all = False
+
+if WLCG_GROUPS_COMPAT:
+    c.GenericOAuthenticator.modify_auth_state_hook = _modify_auth_state_hook
+
+# Admins are managed through dedicated IAM group 
+if OAUTH_SUB:
+    c.Authenticator.admin_users = set()  
+
+# -----------------------------------------------------------------------------
+# 4) Spawner: DockerSpawner 
+# -----------------------------------------------------------------------------
+_default_image = JUPYTER_IMAGE_LIST[0] if JUPYTER_IMAGE_LIST else DEFAULT_JLAB_IMAGE
+c.DockerSpawner.image = _default_image
+# dockerspawner 13 rejects self.image from user_options if the image is not
+# in allowed_images ("Specifying image to launch is not allowed").
+# We populate the allowlist with the list of allowed images (or just the default)
+c.DockerSpawner.allowed_images = JUPYTER_IMAGE_LIST or [_default_image]
+c.DockerSpawner.network_name = DOCKER_NETWORK_NAME
+c.DockerSpawner.use_internal_ip = True
+c.DockerSpawner.remove = True
+c.DockerSpawner.pull_policy = "always"
+c.DockerSpawner.http_timeout = 600
+c.DockerSpawner.debug = True
+
+c.DockerSpawner.default_url = "/lab"
+c.Spawner.default_url = "/lab"
+c.DockerSpawner.cmd = ["jupyterhub-singleuser"]
+
+# Start as root in the container.
+c.DockerSpawner.cmd = ["jupyterhub-singleuser", "--allow-root"]
+c.DockerSpawner.extra_create_kwargs = {"user": "0:0"}
+
+c.DockerSpawner.environment = {
+    "GRAFANA_EXTERNAL_URL": f"https://{DNS_NAME}:3000" if DNS_NAME else "",
+    "JUPYTER_ENABLE_LAB": "yes",
+}
+
+# Limiti di risorse di default (applicati SEMPRE, anche se lo spawn non passa
+# dal form: re-spawn post-cull, avvii via API, ecc.). Il form può alzarli/
+# abbassarli per-utente nel pre_spawn_hook.
+
+# Default resource limits (applied ALWAYS, even if spawning does not go
+# through the form: post-cull re-spawn, API launches, etc.). The form can
+# increase/decrease them per-user in the pre_spawn_hook.
+
+DEFAULT_MEM = os.environ.get("JUPYTER_DEFAULT_MEM", JUPYTER_RAM_LIST[0] if JUPYTER_RAM_LIST else "2G")
+DEFAULT_CPU = float(os.environ.get("JUPYTER_DEFAULT_CPU", "1"))
+c.DockerSpawner.mem_limit = DEFAULT_MEM
+c.DockerSpawner.cpu_limit = DEFAULT_CPU
+
+# User notebook persistence 
+c.DockerSpawner.notebook_dir = NOTEBOOK_DIR
+_volumes = {
+    NOTEBOOK_MOUNT_DIR + "/shared": {
+        "bind": NOTEBOOK_DIR + "/shared",
+        "mode": "ro",
+    },
+    NOTEBOOK_MOUNT_DIR + "/shared/{username}": {
+        "bind": NOTEBOOK_DIR + "/shared/{username}",
+        "mode": "rw",
+    },
+    NOTEBOOK_MOUNT_DIR + "/users/{username}/": {
+        "bind": NOTEBOOK_DIR + "/private",
+        "mode": "rw",
+    },
+}
+if WITH_CVMFS:
+    _volumes["/cvmfs"] = {"bind": NOTEBOOK_DIR + "/cvmfs", "mode": "ro"}
+c.DockerSpawner.volumes = _volumes
+
+# Privilegi host: necessari solo per CVMFS (FUSE). Applicati a tutti gli spawn.
+# if WITH_CVMFS:
+#     c.DockerSpawner.extra_host_config = {
+#         "cap_add": ["SYS_ADMIN"],
+#         "privileged": True,
+#     }
+
+if WITH_S3FUSE: 
+    c.DockerSpawner.extra_host_config = {
+        "cap_add": ["SYS_ADMIN"],
+        "devices": ["/dev/fuse:/dev/fuse:rwm"],
+        "security_opt": ["apparmor=unconfined"],
+    }
+
+# GPU (disabled by default)
+if WITH_GPU:
+    _hc = dict(getattr(c.DockerSpawner, "extra_host_config", {}) or {})
+    _hc["device_requests"] = [
+        {"Driver": "nvidia", "Count": -1, "Capabilities": [["gpu"]]}
+    ]
+    c.DockerSpawner.extra_host_config = _hc
+
+# optional post-start
+if POST_START_CMD:
+    c.DockerSpawner.post_start_cmd = POST_START_CMD
+
+# -----------------------------------------------------------------------------
+# 5) Spawn form: image selection + RAM (+ GPU if enabled)
+# -----------------------------------------------------------------------------
 _option_template = """
-<label for="stack">Select your desired image:</label>
-<input list="images" name="img">
+<label for="img">Select your desired image:</label>
+<input list="images" name="img" value="{default_image}">
 <datalist id="images">
 {images}
 </datalist>
-
 <br>
-    
 <label for="mem">Select your desired memory size:</label>
 <select name="mem" size="1">
-    {rams}
+{rams}
 </select>
-
 <br>
-
-<label for="gpu">GPU:</label>
-<select name="gpu" size="1">
-    {gpu}
+<label for="cpu">Select your desired CPU limit:</label>
+<select name="cpu" size="1">
+{cpus}
 </select>
+{gpu}
 """
-# Spawn single-user servers as Docker containers
-class CustomSpawner(dockerspawner.DockerSpawner):
 
-    # ref: https://github.com/jupyterhub/dockerspawner/blob/87938e64fd3ca9a3e6170144fa6395502e3dba34/dockerspawner/dockerspawner.py#L309
-    pull_policy = "always"
+def _options_form(spawner):
+    image_options = "\n".join(
+        f'<option value="{img}">{img.split("/")[-1]}</option>'
+        for img in JUPYTER_IMAGE_LIST
+    )
+    ram_options = "\n".join(
+        f'<option value="{ram}">{ram}B</option>' for ram in JUPYTER_RAM_LIST
+    )
+    cpu_options = "\n".join(
+        f'<option value="{cpu}">{cpu} CPU</option>' for cpu in JUPYTER_CPU_LIST
+    )
+    if WITH_GPU:
+        gpu_options = """
+        <br>
+        <label for="gpu">GPU:</label>
+        <select name="gpu" size="1">
+        <option value="Y">Yes</option>\n<option value="N">No</option>
+        </select>
+        """
+    else:
+        gpu_options = '<input type="hidden" name="gpu" value="N">\n'
+    return _option_template.format(
+        default_image=_default_image,
+        images=image_options,
+        rams=ram_options,
+        cpus=cpu_options,
+        gpu=gpu_options,
+    )
 
-    def _options_form_default(self):
-        # Get images
-        images = os.environ.get("JUPYTER_IMAGE_LIST", "no default image")
-        images = [image for image in images.split(",") if image]
-        image_options = [
-            f'<option value="{image}">{image.upper()}</option>' for image in images
-        ]
 
-        # Get ram sizes
-        rams = os.environ.get("JUPYTER_RAM_LIST", "1G,2G,4G,8G")
-        rams = [ram for ram in rams.split(",") if ram]
-        ram_options = [f'<option value="{ram}">{ram}B</option>' for ram in rams]
-
-        # Get GPU
-        use_gpu: bool = os.environ.get("WITH_GPU", "false").lower() == "true"
-        gpu_option = '<option value="N">Not Available</option>'
-        if use_gpu:
-            gpu_option = '<option value="Y">Yes</option>\n'
-            gpu_option += '<option value="N"> No </option>'
-
-        # Prepare template
-        options = _option_template.format(
-            images="\n".join(image_options),
-            rams="\n".join(ram_options),
-            gpu=gpu_option,
-        )
-        return options
+class CustomDockerSpawner(dockerspawner.DockerSpawner):
+    """Subclass used to process the spawn form.
+    """
 
     def options_from_form(self, formdata):
-        options = {}
-        options["img"] = formdata["img"]
-        container_image = "".join(formdata["img"])
-        print("SPAWN: " + container_image + " IMAGE")
-        self.image = container_image
-        options["mem"] = formdata["mem"]
-        memory = "".join(formdata["mem"])
-        self.mem_limit = memory
-        options["gpu"] = formdata.get("gpu", "")
-        use_gpu = "".join(options["gpu"]) == "Y"
-        device_request = {}
-        if use_gpu:
-            device_request = {
-                "Driver": "nvidia",
-                "Capabilities": [
-                    ["gpu"]
-                ],  # not sure which capabilities are really needed
-                "Count": 1,  # enable all gpus
-            }
-            self.extra_host_config = {
-                "cap_add": ["SYS_ADMIN"],
-                "privileged": True,
-                "device_requests": [device_request],
-            }
-        else:
-            self.extra_host_config = {"cap_add": ["SYS_ADMIN"], "privileged": True}
-        return options
+        opts = {
+            "image": "".join(formdata.get("img", [])).strip() or _default_image,
+            "mem_limit": "".join(formdata.get("mem", [])).strip() or DEFAULT_MEM,
+            "cpu_limit": "".join(formdata.get("cpu", [])).strip() or str(DEFAULT_CPU),
+            "use_gpu": "".join(formdata.get("gpu", [])).strip() == "Y",
+        }
+        self.log.info("SPAWN options_from_form -> %s", opts)
+        return opts
 
-    @gen.coroutine
-    def create_object(self):
-        """Create the container/service object"""
+c.JupyterHub.spawner_class = CustomDockerSpawner
+c.Spawner.options_form = _options_form
 
-        create_kwargs = dict(
-            image=self.image,
-            environment=self.get_env(),
-            volumes=self.volume_mount_points,
-            name=self.container_name,
-            command=(yield self.get_command()),
-        )
+async def _pre_spawn_hook(spawner):
+    """
+    Apply the form choices and inject the IAM tokens into the user container.
+    The tokens (access/refresh) are needed within jlab-base for oidc-agent/rclone.
+    """
+    
+    opts = spawner.user_options or {}
+    spawner.mem_limit = opts.get("mem_limit") or DEFAULT_MEM
+    try:
+        spawner.cpu_limit = float(opts.get("cpu_limit") or DEFAULT_CPU)
+    except (TypeError, ValueError):
+        spawner.cpu_limit = DEFAULT_CPU
+    if WITH_GPU and opts.get("use_gpu"):
+        hc = dict(spawner.extra_host_config or {})
+        hc["device_requests"] = [
+            {"Driver": "nvidia", "Count": -1, "Capabilities": [["gpu"]]}
+        ]
+        spawner.extra_host_config = hc
 
-        # ensure internal port is exposed
-        create_kwargs["ports"] = {"%i/tcp" % self.port: None}
-        
-        # Starting from image minimal-notebook, jupyter is started with the user jovyan
-        # Following 3 lines force to start jupyter as root
-        create_kwargs['environment']['NB_USER'] = 'root'
-        create_kwargs['environment']['NB_UID'] = 0
-        create_kwargs['environment']['NB_GID'] = 0
+    # --- IAM token injection in the single-user environment ---
+    auth_state = await spawner.user.get_auth_state()
+    if not auth_state:
+        spawner.log.warning("Nessun auth_state per %s: token non iniettati "
+                            "(enable_auth_state e CRYPT_KEY impostati?)",
+                            spawner.user.name)
+        return
+    env = spawner.environment
+    env["IAM_SERVER"] = IAM_URL.rstrip("/")
+    env["IAM_CLIENT_ID"] = IAM_CLIENT_ID
+    env["IAM_CLIENT_SECRET"] = IAM_CLIENT_SECRET
+    env["ACCESS_TOKEN"] = auth_state.get("access_token", "")
+    env["REFRESH_TOKEN"] = auth_state.get("refresh_token", "")
+    env["USERNAME"] = spawner.user.name
+    env["JUPYTERHUB_ACTIVITY_INTERVAL"] = "15"
+    user_info = auth_state.get(
+        getattr(c.GenericOAuthenticator, "user_auth_state_key", "oauth_user"), {}
+    )
+    groups = user_info.get("groups") if isinstance(user_info, dict) else None
+    if groups:
+        env["GROUPS"] = " ".join(groups)
 
-        create_kwargs.update(self.extra_create_kwargs)
 
-        # build the dictionary of keyword arguments for host_config
-        host_config = dict(binds=self.volume_binds, links=self.links)
+c.Spawner.pre_spawn_hook = _pre_spawn_hook
 
-        if getattr(self, "mem_limit", None) is not None:
-            # If jupyterhub version > 0.7, mem_limit is a traitlet that can
-            # be directly configured. If so, use it to set mem_limit.
-            # this will still be overriden by extra_host_config
-            host_config["mem_limit"] = self.mem_limit
-
-        if not self.use_internal_ip:
-            host_config["port_bindings"] = {self.port: (self.host_ip,)}
-        host_config.update(self.extra_host_config)
-        host_config.setdefault("network_mode", self.network_name)
-
-        self.log.debug("Starting host with config: %s", host_config)
-
-        host_config = self.client.create_host_config(**host_config)
-        create_kwargs.setdefault("host_config", {}).update(host_config)
-
-        print(create_kwargs)
-        # create the container
-        obj = yield self.docker("create_container", **create_kwargs)
-        return obj
-
-c.JupyterHub.spawner_class = CustomSpawner
-
-default_spawner = os.getenv("DEFAULT_SPAWNER", "LAB")
-# Default spawn to jupyter noteook
-spawn_cmd = os.environ.get(
-    "DOCKER_SPAWN_CMD",
-    "tini -s -- jupyterhub-singleuser --port=8889 --ip=0.0.0.0 --allow-root --debug --no-browser --ResourceUseDisplay.track_cpu_percent=True",
-)
-c.DockerSpawner.port = 8889
-
-if default_spawner.upper() == "LAB":
-    spawn_cmd += ' --SingleUserNotebookApp.default_url="/lab"'
-    spawn_cmd += ' --NotebookApp.default_url="/lab"'
-    spawn_cmd += ' --JupyterApp.config_file="/usr/etc/jupyter/jupyter_lab_config.py"'
-    c.DockerSpawner.default_url = "/lab"
-
-# uncomment to start a jupyter NB instead of jupyterlab
-# spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "jupyterhub-singleuser --port 8889 --ip 0.0.0.0 --allow-root --debug")
-
-c.DockerSpawner.extra_create_kwargs.update({"command": spawn_cmd})
-
-post_start_cmd = os.getenv("POST_START_CMD", "")
-if post_start_cmd:
-    c.DockerSpawner.post_start_cmd = post_start_cmd
-
-c.DockerSpawner.network_name = "jupyterhub"
-c.DockerSpawner.http_timeout = 600
-
-# Explicitly set notebook directory because we'll be mounting a host volume to
-# it.  Most jupyter/docker-stacks *-notebook images run the Notebook server as
-# user `jovyan`, and set the notebook directory to `/home/jovyan/work`.
-# We follow the same convention.
-# notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
-# c.DockerSpawner.notebook_dir = notebook_dir
-# notebook_dir = "$PWD/persistent-area/{username}/"#os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
-# c.DockerSpawner.notebook_dir = notebook_dir
-# Mount the real user's Docker volume on the host to the notebook user's
-# notebook directory in the container
-# c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
-
-notebook_dir: str = os.environ.get("DOCKER_NOTEBOOK_DIR", "")
-if notebook_dir == "":
-    notebook_dir = "/jupyter-workspace"  # Default value
-
-notebook_mount_dir = "/jupyter-mounts"  # Default value
-notebook_mount_dir_prefix: str = os.environ.get("DOCKER_NOTEBOOK_MOUNT_DIR", "")
-if notebook_mount_dir_prefix != "":
-    notebook_mount_dir = notebook_mount_dir_prefix + "/jupyter-mounts"
-
-collaborative_service: bool = os.getenv("JUPYTER_COLLAB_SERVICE", "False").lower() in [
-    "true",
-    "t",
-    "yes",
-    "y"
-]
-
-volumes = {
-    # Mount point for shared folder
-    notebook_mount_dir
-    + "/shared": {
-        "bind": notebook_dir + "/shared",
-        "mode": "ro",
-    },
-    notebook_mount_dir
-    + "/shared/{username}": {
-        "bind": notebook_dir + "/shared/{username}",
-        "mode": "rw",
-    },
-    # Mount point for private stuff
-    notebook_mount_dir
-    + "/users/{username}/": {
-        "bind": notebook_dir + "/private", 
-        "mode": "rw"},
-}
-
-volumes_collab = {
-    # Mount point for collaboration jupyter lab
-    notebook_mount_dir
-    + "/collaborativefolder": {
-        "bind": notebook_dir + "/collaborativefolder",
-        "mode": "rw",
-    },
-    # notebook_mount_dir
-    # + "/collaborativefolder/{username}": {
-    #     "bind": notebook_dir + "/collaborativefolder/{username}",
-    #     "mode": "rw",
-    # },
-}
-if collaborative_service:
-    c.DockerSpawner.volumes = {**volumes, **volumes_collab}
-else:
-    c.DockerSpawner.volumes = volumes
-
-print(c.DockerSpawner.volumes)
-use_cvmfs: bool = os.getenv("JUPYTER_WITH_CVMFS", "False").lower() in [
-    "true",
-    "t",
-    "yes",
-]
-if use_cvmfs:
-    c.DockerSpawner.volumes["/cvmfs/"] = {
-        "bind": f"{notebook_dir}/cvmfs",
-        "mode": "ro",
-    }
-
-# volume_driver is no longer a keyword argument to create_container()
-# c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
-# Remove containers once they are stopped
-c.DockerSpawner.remove = True
-# For debugging arguments passed to spawned containers
-c.DockerSpawner.debug = True
-
-c.JupyterHub.hub_bind_url = "http://:8088"
-c.JupyterHub.hub_connect_ip = "jupyterhub"
-c.JupyterHub.admin_access = True
-
-# c.Authenticator.allowed_users = {'test'}
-
+# -----------------------------------------------------------------------------
+# 6) Idle culler (releases resources from inactive sessions)
+# -----------------------------------------------------------------------------
 c.JupyterHub.load_roles = [
     {
-        "name": "jupyterhub-idle-culler-role",
+        "name": "idle-culler",
         "scopes": [
             "list:users",
             "read:users:activity",
             "read:servers",
-            "delete:servers"
+            "delete:servers",
         ],
-        "services": ["jupyterhub-idle-culler-service"],
+        "services": ["idle-culler"],
     }
 ]
 
-services = [
+c.JupyterHub.services = [
     {
-        "name": "jupyterhub-idle-culler-service",
-        "command": [ sys.executable, "-m", "jupyterhub_idle_culler", "--timeout=7200"]
+        "name": "idle-culler",
+        "command": [
+            "python3", "-m", "jupyterhub_idle_culler",
+            f"--timeout={IDLE_CULLER_TIMEOUT}",
+        ],
     }
 ]
-
-if collaborative_service:
-    services.append(
-        {
-            "url": "http://collab_proxy:8099",
-            "name": "Collaborative-Jupyter",
-            "api_token": os.environ.get("JUPYTERHUB_API_TOKEN", "API_TOKEN_EXAMPLE"),
-        }
-    )
-
-c.JupyterHub.services = services

@@ -1,22 +1,48 @@
-# Image name: harbor.cloud.infn.it/datacloud-jupyter/jhub-singlenode:2.1.1
+# Image name: harbor.cloud.infn.it/datacloud-jupyter/jhub-singlenode:2.3.0
 
-FROM jupyterhub/jupyterhub:4.1.5
+# =============================================================================
+# snj-jhub  —  JupyterHub image (Debian 13 base)
+#
+# jupyterhub/jupyterhub:5.x è già basata su Debian. La teniamo come base:
+# è il punto in cui vive l'Hub (orchestrazione, DockerSpawner, OAuth IAM).
+# Le immagini single-user (jlab-base / jlab-standalone) sono separate.
+#
+# Modifiche rispetto all'originale:
+#   - niente blocchi "collaborative" e niente ramo NOTEBOOK (solo /lab)
+#   - jupyterhub_config.py con helper *_FILE per i Docker secrets
+# =============================================================================
+ARG BASE_IMAGE="jupyterhub/jupyterhub:5.4.5"
+FROM ${BASE_IMAGE}
 
-#RUN mkdir -p /.init
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends wget  && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+LABEL org.opencontainers.image.title="jhub-singlenode" \
+      org.opencontainers.image.description="JupyterHub single-node" \
+      org.opencontainers.image.vendor="INFN-DataCloud"
 
-RUN python3 -m pip install --no-cache-dir -U \
-            # dockerspawner==13.0.0 latest in 2024-10-02
-            dockerspawner \ 
-            jupyterhub-idle-culler \
-            # oauthenticator >= 16.0.0 not compatible
-            oauthenticator==15.1.0  \
-            pip \
-            pyjwt \
-            setuptools \
-            wheel 
-                                              
-COPY jupyterhub_config.py /srv/jupyterhub/
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    SHELL=/bin/bash 
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \ 
+    DEBIAN_FRONTEND=noninteractive apt-get full-upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# --- Python packages -----------------------------------------------
+RUN python3 -m pip install --no-cache-dir \
+        "dockerspawner==13.*" \
+        "oauthenticator>=17.1.0,<18" \
+        "jupyterhub-idle-culler==1.*" \
+        "pyjwt>=2.8"
+
+# --- Hub Config ----------------------------------------------------------
+COPY jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py
+
+# State Directories 
+RUN mkdir -p /srv/jupyterhub/cookies /srv/jupyterhub/db
+
+WORKDIR /srv/jupyterhub
+
+EXPOSE 8088 8081
+
+CMD ["jupyterhub", "--config=/srv/jupyterhub/jupyterhub_config.py"]
