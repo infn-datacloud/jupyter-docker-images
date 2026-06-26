@@ -177,7 +177,7 @@ c.DockerSpawner.cmd = ["jupyterhub-singleuser", "--allow-root"]
 c.DockerSpawner.extra_create_kwargs = {"user": "0:0"}
 
 c.DockerSpawner.environment = {
-    "GRAFANA_EXTERNAL_URL": f"https://{DNS_NAME}:3000" if DNS_NAME else "",
+    "GRAFANA_EXTERNAL_URL": f"https://{DNS_NAME}/grafana" if DNS_NAME else "",
     "JUPYTER_ENABLE_LAB": "yes",
 }
 
