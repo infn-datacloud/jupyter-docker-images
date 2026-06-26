@@ -114,8 +114,8 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh
 RUN python3 -m pip install --no-cache-dir \
       "git+https://github.com/infn-datacloud/jupyter_codeserver_proxy.git@c6b2d6f16774bbde18a52160cee11ec569436e64"
 
-COPY jupyterhub-singleuser /usr/local/bin/jupyterhub-singleuser
 COPY spawn.sh ${JUPYTERLAB_WORKSPACE}/.init/spawn.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Copy Rclone files
 COPY rclone-aws.config ${JUPYTERLAB_WORKSPACE}/.init/rclone-aws.config
@@ -125,7 +125,7 @@ COPY rclone-sts.sh ${JUPYTERLAB_WORKSPACE}/.init/rclone-sts.sh
 COPY rclone-token.sh ${JUPYTERLAB_WORKSPACE}/.init/rclone-token.sh
 COPY rclone.config ${JUPYTERLAB_WORKSPACE}/.init/rclone.config
 
-RUN chmod +x /usr/local/bin/jupyterhub-singleuser && \
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
     chmod +x /jupyterlab-workspace/.init/*.sh && \
     chmod +x /jupyterlab-workspace/.init/*.py 
 
@@ -143,5 +143,6 @@ WORKDIR ${JUPYTERLAB_WORKSPACE}
 USER root
 
 EXPOSE 8888
-ENTRYPOINT ["tini", "-g", "--"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["jupyterhub-singleuser", "--ip=0.0.0.0", "--port=8888", "--allow-root"]
+

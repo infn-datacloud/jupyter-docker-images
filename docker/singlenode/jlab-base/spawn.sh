@@ -1,27 +1,24 @@
 #!/bin/bash
+# Init per-utente: oidc-agent + mount S3 (rclone/FUSE). Robusto e idempotente.
+set -uo pipefail
+BASE_DIR=/jupyterlab-workspace/.init
+S3_ROOT=/jupyterlab-workspace/s3
 
-# Configure oidc-agent for user token management
-echo "eval \`oidc-keychain\`" >> ~/.bashrc
-eval `OIDC_CONFIG_DIR=$HOME/.config/oidc-agent oidc-keychain`
-oidc-gen infncloud --issuer $IAM_SERVER \
---client-id $IAM_CLIENT_ID \
---client-secret $IAM_CLIENT_SECRET \
---rt $REFRESH_TOKEN \
---confirm-yes \
---scope "openid profile email" \
---redirect-uri http://localhost:8843 \
---pw-cmd "echo \"DUMMY PWD\""
+# oidc-agent
+echo 'eval `oidc-keychain`' >> ~/.bashrc
+eval "$(OIDC_CONFIG_DIR=$HOME/.config/oidc-agent oidc-keychain)"
+oidc-gen infncloud --issuer "$IAM_SERVER" \
+  --client-id "$IAM_CLIENT_ID" --client-secret "$IAM_CLIENT_SECRET" \
+  --rt "$REFRESH_TOKEN" --confirm-yes --scope "openid profile email" \
+  --redirect-uri http://localhost:8843 --pw-cmd "echo 'DUMMY PWD'"
 
-# kill `ps faux | grep rclone | grep ".${USERNAME}" | awk '{ print $2 }'`
-# kill `ps faux | grep rclone | grep ".scratch" | awk '{ print $2 }'`
+# Stale mounts/processes cleaning
+for mp in "$S3_ROOT/$USERNAME" "$S3_ROOT/scratch"; do
+  fusermount -uz "$mp" 2>/dev/null || true
+done
+pids=$(pgrep -f "rclone .*mount" || true)
+[ -n "$pids" ] && kill $pids 2>/dev/null || true
 
-pids=$(pgrep -f "rclone.*\.${USERNAME}"); [ -n "$pids" ] && kill $pids
-pids=$(pgrep -f "rclone.*\.scratch"); [ -n "$pids" ] && kill $pids
-
-mkdir -p /jupyterlab-workspace/s3/
-# mkdir -p /jupyterlab-workspace/local/
-mkdir -p /jupyterlab-workspace/s3/${USERNAME}
-mkdir -p /jupyterlab-workspace/s3/scratch
-
-/jupyterlab-workspace/.init/rclone-cmd.sh
-
+# mountpoint + mount
+mkdir -p "$S3_ROOT/$USERNAME" "$S3_ROOT/scratch"
+"$BASE_DIR/rclone-cmd.sh"
