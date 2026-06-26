@@ -43,7 +43,7 @@ pipeline {
         REPO_NAME =                  'datacloud-jupyter'
         
         // General section
-        TAG_NAME =                   '2.1.1'
+        TAG_NAME =                   '2.1.2'
 
         // Singlenode section
         JHUB_IMAGE_NAME =            'jhub-singlenode'
