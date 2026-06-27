@@ -8,6 +8,19 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - contextdir: docker/ai_infn/jlab/
+            imagename: jlab-ai-infn:head
+            baseimagename: harbor.cloud.infn.it/datacloud-templates/jlab-base:2.1.1
+            baseimagecontext: docker/singlenode/jlab-base
+
+          - contextdir: docker/ai_infn/jhub/
+            imagename: jhub-ai-infn:head
+            baseimagename: ""
+            baseimagecontext: ""
 
     steps:
       - name: Checkout repository
@@ -16,17 +29,20 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build base Docker image
+      - name: Build base image ${{ matrix.baseimagename }} from ${{ matrix.baseimagecontext }}
+        if: ${{ matrix.baseimagename != '' && matrix.baseimagename != null }}
         run: |
-          docker build -t harbor.cloud.infn.it/datacloud-templates/jlab-base:2.0.0 docker/singlenode/jlab-base
+          docker build -t ${{ matrix.baseimagename }} ${{ matrix.baseimagecontext }}
 
-      - name: Build custom Docker image
+      - name: Build image ${{ matrix.imagename }} frin ${{ matrix.contextdir }}
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository }}/jlab-ai-infn:head
-          docker build -t $IMAGE_NAME docker/ai_infn/jlab/
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/${{ matrix.imagename }}
+          docker build -t $IMAGE_NAME ${{ matrix.contextdir }}
 
-      - name: Push Docker image to GHCR
+      - name: Push image ${{ matrix.imagename }} to GHCR
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository }}/jlab-ai-infn:head
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/${{ matrix.imagename }}
           docker push $IMAGE_NAME
+
+
 
