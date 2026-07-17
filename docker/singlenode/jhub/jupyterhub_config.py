@@ -66,14 +66,14 @@ NOTEBOOK_MOUNT_DIR = (os.environ.get("DOCKER_NOTEBOOK_MOUNT_DIR", "").rstrip("/"
 NOTEBOOK_MOUNT_DIR = "/" + NOTEBOOK_MOUNT_DIR
 WITH_S3FUSE = os.environ.get("WITH_S3FUSE", "true").lower() in ("1", "true", "yes", "y", "t")
 
-DEFAULT_JLAB_IMAGE = "harbor.cloud.infn.it/datacloud-templates/jlab-base:latest"
+DEFAULT_JLAB_IMAGE = "harbor.cloud.infn.it/datacloud-jupyter/jlab-base:latest"
 
 
 # -----------------------------------------------------------------------------
 # 2) JupyterHub core
 # -----------------------------------------------------------------------------
 c.JupyterHub.hub_ip = "0.0.0.0"
-c.JupyterHub.hub_connect_ip = "jupyterhub"   # nome del servizio sulla rete docker
+c.JupyterHub.hub_connect_ip = "jupyterhub"   # service name on the docker network
 c.JupyterHub.bind_url = "http://0.0.0.0:8088"
 c.JupyterHub.hub_bind_url = "http://:8088"
 c.JupyterHub.admin_access = True
@@ -181,10 +181,6 @@ c.DockerSpawner.environment = {
     "JUPYTER_ENABLE_LAB": "yes",
 }
 
-# Limiti di risorse di default (applicati SEMPRE, anche se lo spawn non passa
-# dal form: re-spawn post-cull, avvii via API, ecc.). Il form può alzarli/
-# abbassarli per-utente nel pre_spawn_hook.
-
 # Default resource limits (applied ALWAYS, even if spawning does not go
 # through the form: post-cull re-spawn, API launches, etc.). The form can
 # increase/decrease them per-user in the pre_spawn_hook.
@@ -214,7 +210,7 @@ if WITH_CVMFS:
     _volumes["/cvmfs"] = {"bind": NOTEBOOK_DIR + "/cvmfs", "mode": "ro"}
 c.DockerSpawner.volumes = _volumes
 
-# Privilegi host: necessari solo per CVMFS (FUSE). Applicati a tutti gli spawn.
+# Host privileges: needed only for CVMFS (FUSE). Applied to every spawn.
 # if WITH_CVMFS:
 #     c.DockerSpawner.extra_host_config = {
 #         "cap_add": ["SYS_ADMIN"],
@@ -331,8 +327,8 @@ async def _pre_spawn_hook(spawner):
     # --- IAM token injection in the single-user environment ---
     auth_state = await spawner.user.get_auth_state()
     if not auth_state:
-        spawner.log.warning("Nessun auth_state per %s: token non iniettati "
-                            "(enable_auth_state e CRYPT_KEY impostati?)",
+        spawner.log.warning("No auth_state for %s: tokens not injected "
+                            "(are enable_auth_state and CRYPT_KEY set?)",
                             spawner.user.name)
         return
     env = spawner.environment

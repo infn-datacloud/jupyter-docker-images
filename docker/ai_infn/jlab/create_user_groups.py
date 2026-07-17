@@ -1,7 +1,7 @@
 #!/bin/env python3
 """
 Simple script creating groups for the NB_USER based on NB_GROUPS env var.
-The script is intended for Jupyter docker images inherinting from docker-stacks-foundation 
+The script is intended for Jupyter docker images inherinting from docker-stacks-foundation
 and should be installed in /usr/local/bin/before-notebook.d/
 
 The format of the NB_GROUPS env var is:
@@ -18,7 +18,7 @@ import traceback
 
 
 print (f"Processing NB_GROUPS={os.environ.get('NB_GROUPS', '')}")
-groups = os.environ.get("NB_GROUPS", "").split(", ")
+groups = [g.strip() for g in os.environ.get("NB_GROUPS", "").split(",") if g.strip()]
 username = os.environ.get("NB_USER", os.environ.get("JUPYTERHUB_USER", "jovyan"))
 
 for group in groups:
@@ -29,5 +29,3 @@ for group in groups:
     except:
         traceback.print_exc()
         print ("Failed processing group: ", group)
-
-

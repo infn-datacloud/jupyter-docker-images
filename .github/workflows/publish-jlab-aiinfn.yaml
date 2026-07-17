@@ -5,6 +5,9 @@ on:
     branches:
       - master
 
+env:
+  BASE_IMAGE: harbor.cloud.infn.it/datacloud-jupyter/jlab-base:2.3.0
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -18,15 +21,14 @@ jobs:
 
       - name: Build base Docker image
         run: |
-          docker build -t harbor.cloud.infn.it/datacloud-templates/jlab-base:2.0.0 docker/singlenode/jlab-base
+          docker build -t ${{ env.BASE_IMAGE }} docker/singlenode/jlab-base
 
       - name: Build custom Docker image
         run: |
           IMAGE_NAME=ghcr.io/${{ github.repository }}/jlab-ai-infn:head
-          docker build -t $IMAGE_NAME docker/ai_infn/jlab/
+          docker build --build-arg BASE_IMAGE=${{ env.BASE_IMAGE }} -t $IMAGE_NAME docker/ai_infn/jlab/
 
       - name: Push Docker image to GHCR
         run: |
           IMAGE_NAME=ghcr.io/${{ github.repository }}/jlab-ai-infn:head
           docker push $IMAGE_NAME
-

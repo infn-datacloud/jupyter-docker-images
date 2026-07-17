@@ -1,5 +1,5 @@
 #!/bin/bash
-# Init per-utente: oidc-agent + mount S3 (rclone/FUSE). Robusto e idempotente.
+# Per-user init: oidc-agent + S3 mount (rclone/FUSE). Robust and idempotent.
 set -uo pipefail
 BASE_DIR=/jupyterlab-workspace/.init
 S3_ROOT=/jupyterlab-workspace/s3

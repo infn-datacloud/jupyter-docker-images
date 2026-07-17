@@ -4,7 +4,7 @@ def buildAndPushImage(String imageName, String dockerBuildOptions) {
     dockerImage.push()
     }
 }
- 
+
 def getReleaseVersion(String tagName) {
     if (tagName) {
         return tagName.replaceAll(/^v/, '')
@@ -30,18 +30,18 @@ def executeBuildAndCleanup(String imageName, String buildOptions) {
 //         }
 //     }
 // }
- 
+
 pipeline {
     agent {
         node { label 'jenkins-node-label-1' }
     }
-    
+
     environment {
         // Harbor section
         HARBOR_CREDENTIALS =         'harbor-paas-credentials'
         REGISTRY_FQDN =              'harbor.cloud.infn.it'
         REPO_NAME =                  'datacloud-jupyter'
-        
+
         // General section
         TAG_NAME =                   '2.3.0'
 
@@ -54,7 +54,10 @@ pipeline {
         SN_JLAB_STANDALONE_PATH =    'docker/singlenode/jlab-standalone'
 
         // AI_INFN section
-        AI_INFN_REPO_NAME =          'unpacked' 
+        AI_INFN_REPO_NAME =          'unpacked'
+        // TODO: quando arrivano i permessi di push su 'unpacked', usare
+        // AI_INFN_REPO_NAME al posto di REPO_NAME qui sotto.
+        AI_INFN_PUSH_REPO =          "${REPO_NAME}"
         AI_INFN_TAG_NAME =           'ai1.5'
         AI_INFN_JLAB_IMAGE_NAME =    'jlab-ai-infn'
         AI_INFN_JLAB_PATH =          'docker/ai_infn/jlab'
@@ -78,7 +81,7 @@ pipeline {
     }
 
     triggers {
-        cron('H H * * H') 
+        cron('H H * * H')
     }
 
     stages {
@@ -88,7 +91,7 @@ pipeline {
                 stage('SingleNode JHub') {
                     environment {
                         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${JHUB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "-f ${SN_JHUB_PATH}/Dockerfile ${SN_JHUB_PATH}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache --pull -f ${SN_JHUB_PATH}/Dockerfile ${SN_JHUB_PATH}"
                     }
                     steps {
                         script {
@@ -121,7 +124,7 @@ pipeline {
                 stage('Base JLab') {
                     environment {
                         IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "--no-cache -f ${SN_JLAB_BASE_PATH}/Dockerfile ${SN_JLAB_BASE_PATH}"
+                        DOCKER_BUILD_OPTIONS = "--no-cache --pull -f ${SN_JLAB_BASE_PATH}/Dockerfile ${SN_JLAB_BASE_PATH}"
                     }
                     steps {
                         script {
@@ -147,9 +150,9 @@ pipeline {
                 // }
                 stage('AI_INFN JLab') {
                     environment {
-                        IMAGE_NAME = "${REGISTRY_FQDN}/${REPO_NAME}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
+                        IMAGE_NAME = "${REGISTRY_FQDN}/${AI_INFN_PUSH_REPO}/${AI_INFN_JLAB_IMAGE_NAME}:${RELEASE_VERSION}-${AI_INFN_TAG_NAME}"
                         BASE_IMAGE = "${REGISTRY_FQDN}/${REPO_NAME}/${BASE_JLAB_IMAGE_NAME}:${RELEASE_VERSION}"
-                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
+                        DOCKER_BUILD_OPTIONS = "--build-arg BASE_IMAGE=${BASE_IMAGE} --no-cache --pull -f ${AI_INFN_JLAB_PATH}/Dockerfile ${AI_INFN_JLAB_PATH}"
                     }
                     steps {
                         script {
@@ -181,12 +184,13 @@ pipeline {
                 //     }
                 // }
             }
-        } 
+        }
     }
-    
+
     post {
         always {
-            sh "/usr/bin/docker image prune -fa"
+            // sh "/usr/bin/docker image prune -fa" Use this if you want to remove all unused images, not just dangling ones.
+            sh "/usr/bin/docker image prune -f"
         }
     }
 }

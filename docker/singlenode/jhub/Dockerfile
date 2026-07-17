@@ -3,13 +3,13 @@
 # =============================================================================
 # snj-jhub  —  JupyterHub image (Debian 13 base)
 #
-# jupyterhub/jupyterhub:5.x è già basata su Debian. La teniamo come base:
-# è il punto in cui vive l'Hub (orchestrazione, DockerSpawner, OAuth IAM).
-# Le immagini single-user (jlab-base / jlab-standalone) sono separate.
+# jupyterhub/jupyterhub:5.x is already Debian-based. We keep it as the base:
+# it is where the Hub lives (orchestration, DockerSpawner, OAuth IAM).
+# The single-user images (jlab-base / jlab-standalone) are separate.
 #
-# Modifiche rispetto all'originale:
-#   - niente blocchi "collaborative" e niente ramo NOTEBOOK (solo /lab)
-#   - jupyterhub_config.py con helper *_FILE per i Docker secrets
+# Changes with respect to the original:
+#   - no "collaborative" blocks and no NOTEBOOK branch (only /lab)
+#   - jupyterhub_config.py with *_FILE helpers for Docker secrets
 # =============================================================================
 ARG BASE_IMAGE="jupyterhub/jupyterhub:5.4.5"
 FROM ${BASE_IMAGE}
@@ -23,7 +23,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=C.UTF-8 \
     SHELL=/bin/bash 
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \ 
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get full-upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt autoremove -y && \
     rm -rf /var/lib/apt/lists/*

@@ -1,5 +1,5 @@
 - title: Guides
-  description: Una raccolta di guide e tutorial per l'uso del JupyterHub e dei suoi servizi associati.
+  description: A collection of guides and tutorials on using JupyterHub and its associated services.
   source: https://guides.cloud.infn.it/
   type: url
   catalog: DataCloud
@@ -8,7 +8,7 @@
     createNewWindow: true
 
 - title: Resource Monitoring
-  description: Grafana dashboard per monitorare risorse e performance del nodo JupyterHub.
+  description: Grafana dashboard to monitor resources and performance of the JupyterHub node.
   source: /grafana/d/vm-overview/jupyterhub-vm-e28094-overview?orgId=1&from=now-24h&to=now&timezone=browser&refresh=30s
   type: url
   catalog: DataCloud

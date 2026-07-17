@@ -1,14 +1,14 @@
 # =============================================================================
-# snj-jlab-base  —  immagine single-user JupyterLab su base Debian 13 (Trixie)
+# snj-jlab-base  —  single-user JupyterLab image based on Debian 13 (Trixie)
 #
-# Sostituisce quay.io/jupyter/minimal-notebook:ubuntu-22.04 (basata su Ubuntu),
-# per cui NON esiste un tag Debian 13. Strategia: debian:trixie-slim + micromamba
-# per ricreare l'ambiente conda (jupyterlab, ipykernel, estensioni).
+# Replaces quay.io/jupyter/minimal-notebook:ubuntu-22.04 (Ubuntu-based), for
+# which NO Debian 13 tag exists. Strategy: debian:trixie-slim + micromamba to
+# rebuild the conda environment (jupyterlab, ipykernel, extensions).
 #
-# Include:
-#   - jupyter-server-proxy (+ estensione JupyterLab) → tile nel launcher
-#   - config /etc/jupyter/jupyter_server_config.py con il tile "Grafana"
-#     (Opzione B: link esterno a https://<DNS>:3000 — robusto per servizio condiviso)
+# Includes:
+#   - jupyter-server-proxy (+ JupyterLab extension) → tile in the launcher
+#   - config /etc/jupyter/jupyter_server_config.py with the "Grafana" tile
+#     (Option B: external link to https://<DNS>:3000 — robust for a shared service)
 # =============================================================================
 ARG BASE_IMAGE="debian:trixie-slim"
 FROM ${BASE_IMAGE}
@@ -27,12 +27,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NB_USER=jovyan \
     NB_UID=1000 \
     NB_GID=1000 \
-    HOME=/home/jovyan \ 
+    HOME=/home/jovyan \
     JUPYTERLAB_WORKSPACE=/jupyterlab-workspace
 
-# --- Pacchetti di sistema -----------------------------------------------------
-# fuse3  : su Debian 13 il pacchetto reale è fuse3 (fuse è transizionale)
-# i -dev : necessari per build di alcune estensioni Python
+# --- System packages ----------------------------------------------------------
+# fuse3    : on Debian 13 the real package is fuse3 (fuse is transitional)
+# the -dev : needed to build some Python extensions
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get full-upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -67,7 +67,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# --- Utente non-root jovyan (convenzione docker-stacks) ----------------------
+# --- Non-root user jovyan (docker-stacks convention) --------------------------
 RUN groupadd -g ${NB_GID} ${NB_USER} \
     && useradd -m -s /bin/bash -N -u ${NB_UID} -g ${NB_GID} ${NB_USER} \
     && mkdir -p /opt/conda /jupyterlab-workspace \
@@ -94,7 +94,7 @@ RUN micromamba install -y -p /opt/conda -c conda-forge \
 # --- Estensioni JupyterLab / server-proxy -------------------------------------
 RUN python3 -m pip install --no-cache-dir \
       boto3==1.35.99 \
-      numpy \ 
+      numpy \
       pandas \
       matplotlib \
       h5py \
