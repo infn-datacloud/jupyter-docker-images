@@ -1,5 +1,9 @@
 # Image name: harbor.cloud.infn.it/datacloud-templates/jlab-ai-infn:2.1.2-ai1.5" 
 ARG BASE_IMAGE="harbor.cloud.infn.it/datacloud-templates/jlab-base:2.1.2" 
+ARG SLINKY_LOGIN_IMAGE=ghcr.io/slinkyproject/login:26.05-ubuntu24.04
+
+FROM ${SLINKY_LOGIN_IMAGE} AS slinky_login
+
 FROM ${BASE_IMAGE}
 
 # RUN splitted to Install apptainer, cvmfs and openssh-server
@@ -15,7 +19,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     add-apt-repository -y ppa:apptainer/ppa && \
     apt update --allow-unauthenticated && \
     apt install -y \
-      apptainer \
+      apptainer-suid \
 #      cvmfs \
 #      cvmfs-fuse3 \
       cvmfs-libs \
@@ -27,9 +31,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       # Remote desktop:
       dbus-x11 \
       xorg \
-      xfce4 xfce4-panel xfce4-session xfce4-settings breeze-icon-theme kde-plasma-desktop \
+      xfce4 xfce4-panel xfce4-session xfce4-settings breeze-icon-theme \
       tigervnc-standalone-server \
-    && \
+      # Slurm
+      libjwt2 \
+      libhttp-parser2.9 \
+      && \
     apt-get clean && rm -rf /var/lib/apt/lists/* cvmfs-release-latest_all.deb 
 
 # Update conda and python version
@@ -39,12 +46,14 @@ RUN conda update -n base -c conda-forge conda && \
 # Install snakemake Python modules
 RUN python3 -m pip install --no-cache-dir \
       jupyter-remote-desktop-proxy \
+      jupyter-ai[ui] langchain-ollama \
       snakemake-executor-plugin-cluster-generic>=1 \
       snakemake-storage-plugin-s3 \
       git+https://github.com/landerlini/snakemake-storage-plugin-webdav \
       git+https://github.com/landerlini/snakemake-storage-plugin-fs \
       git+https://github.com/landerlini/snakemake-storage-helper \
-      snakemake>=9.11
+      snakemake>=9.11 \
+      jupyter-sshd-proxy
 
 # Install customized JuiceFS client
 ADD https://pandora.infn.it/public/3423df/dl/juicefs /usr/bin/juicefs 
@@ -52,7 +61,24 @@ RUN chmod a+rx /usr/bin/juicefs
 
 # Install sts-wire
 ADD https://repo.cloud.cnaf.infn.it/repository/sts-wire/sts-wire-linux/2.1.5/sts-wire-linux-2.1.5 /usr/local/bin/sts-wire
-RUN chmod +x /usr/local/bin/sts-wire
+RUN chmod a+rx /usr/local/bin/sts-wire
+
+# Install proot and a wrapper to execute apptainer sandboxes 
+ADD https://proot.gitlab.io/proot/bin/proot /usr/local/bin/proot
+COPY ./proot.sh /usr/local/bin/proot.sh
+RUN chmod a+rx /usr/local/bin/proot && \
+    chmod a+rx /usr/local/bin/proot.sh
+
+# Make sure user SLURM is defined and consistent with slinky convention on id
+RUN groupadd -g 401 slurm && \
+    useradd -r -u 401 -g 401 -M -s /usr/sbin/nologin slurm
+
+COPY --from=slinky_login /usr/lib/x86_64-linux-gnu/slurm /usr/lib/x86_64-linux-gnu/slurm
+COPY --from=slinky_login /usr/bin /slurm/bin
+COPY --from=slinky_login /usr/sbin /slurm/sbin
+
+ENV PATH="${PATH}:/slurm/bin"
+
 
 # Changes the home directory of the user to private
 RUN sed -i 's/:\/root:/:\/home\/private:/g' /etc/passwd
@@ -64,7 +90,18 @@ COPY ./sshd.conf /etc/ssh/sshd_config.d/aiinfn.conf
 COPY ./create_user_groups.py /usr/local/bin/before-notebook.d/05_create_user_groups.py
 RUN chmod a+rx /usr/local/bin/before-notebook.d/05_create_user_groups.py
 
+# Execute a custom script that can be hosted in NFS and mounted in /envs/setup.sh
+COPY ./exec_setup.sh /usr/local/bin/before-notebook.d/10_exec_setup.sh
+RUN chmod a+rx /usr/local/bin/before-notebook.d/10_exec_setup.sh
+
+# Patches the start.sh script to support custom home directories
+COPY ./start.sh /usr/local/bin/start.sh
+RUN chmod a+rx /usr/local/bin/start.sh
+
 RUN echo "rm -rf /home/jovyan" >  /usr/local/bin/before-notebook.d/99_cleanup_jovyan.sh 
 RUN chmod a+rx                    /usr/local/bin/before-notebook.d/99_cleanup_jovyan.sh 
+
+# Creates an entry point for node caching, useful for interLink
+RUN mkdir /cache && chmod a+rwX /cache
 
 WORKDIR /home
